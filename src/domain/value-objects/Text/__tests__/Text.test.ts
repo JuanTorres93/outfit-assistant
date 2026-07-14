@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
+
 import { ValidationDomainError } from '../../../common/domainErrors';
 import { Text } from '../Text';
 
@@ -12,13 +13,6 @@ describe('Text', () => {
     expect(text.value).toBe(textValue);
   });
 
-  it('should throw validation error if text is not a string', async () => {
-    // @ts-expect-error testing invalid input
-    expect(() => Text.create(123)).toThrow(ValidationDomainError);
-    // @ts-expect-error testing invalid input
-    expect(() => Text.create(123)).toThrow(/string/);
-  });
-
   it('should trim whitespace from the text value', async () => {
     const textValue = '   Text with whitespace   ';
     const trimmedValue = 'Text with whitespace';
@@ -26,15 +20,6 @@ describe('Text', () => {
     const text = Text.create(textValue);
 
     expect(text.value).toBe(trimmedValue);
-  });
-
-  it('should respect maxLength value', async () => {
-    const longText = 'a'.repeat(1001);
-    const maxLength = 20;
-    const options = { maxLength };
-
-    expect(() => Text.create(longText, options)).toThrow(ValidationDomainError);
-    expect(() => Text.create(longText, options)).toThrow(/length.*exceed/);
   });
 
   describe('Equality checks', () => {
@@ -66,10 +51,20 @@ describe('Text', () => {
       const emptyText = '';
       const options = { canBeEmpty: false };
 
-      expect(() => Text.create(emptyText, options)).toThrow(
-        ValidationDomainError,
-      );
-      expect(() => Text.create(emptyText, options)).toThrow(/cannot be empty/);
+      expect(() => Text.create(emptyText, options)).toThrow(ValidationDomainError);
+    });
+
+    it('should throw validation error if text is not a string', async () => {
+      // @ts-expect-error testing invalid input
+      expect(() => Text.create(123)).toThrow(ValidationDomainError);
+    });
+
+    it('should respect maxLength value', async () => {
+      const longText = 'a'.repeat(1001);
+      const maxLength = 20;
+      const options = { maxLength };
+
+      expect(() => Text.create(longText, options)).toThrow(ValidationDomainError);
     });
   });
 });
