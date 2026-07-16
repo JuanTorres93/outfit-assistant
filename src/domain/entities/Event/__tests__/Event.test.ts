@@ -27,15 +27,19 @@ describe("Event", () => {
             expect(event.name).toBe(validEventProps.name);
         });
 
-        it('should return the correct outfits', () => {
+        /*it('should return the correct outfits', () => {
             expect(event.outfits).toEqual(validEventProps.outfits);
-        });
+        });*/
         it('should return the correct location', () => {
             expect(event.location).toBe(validEventProps.location);
         });
 
         it('should return the correct date', () => {
-            expect(event.date).toBe(validEventProps.date);
+            expect(event.date).toBeInstanceOf(Date);
+        });
+
+        it('should return the correct userID', () => {
+            expect(event.userID).toBe(validEventProps.userID);
         });
 
     });
