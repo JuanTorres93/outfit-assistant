@@ -38,10 +38,35 @@ describe("Event", () => {
             expect(event.date).toBeInstanceOf(Date);
         });
 
-        it('should return the correct userID', () => {
-            expect(event.userID).toBe(validEventProps.userID);
+        it('should return the correct userId', () => {
+            expect(event.userId).toBe(validEventProps.userId);
+        });
+
+        it('should return the correct createdAt', () => {
+            expect(event.createdAt).toBeInstanceOf(Date);
+        });
+
+        it('should return the correct updatedAt', () => {
+            expect(event.updatedAt).toBeInstanceOf(Date);
         });
 
     });
 
+    describe('Update', () => {
+        it('should update the name', () => {
+            const newName = 'Updated Event Name';
+            event.changeName(newName);
+            expect(event.name).toBe(newName);
+        });
+        it('should update the location', () => {
+            const newLocation = 'Updated Event Location';
+            event.updateLocation(newLocation);
+            expect(event.location).toBe(newLocation);
+        });
+        it('should update the date', () => {
+            const newDate = new Date('2024-01-01');
+            event.updateDate(newDate);
+            expect(event.date).toEqual(newDate);
+        });
+    });
 })

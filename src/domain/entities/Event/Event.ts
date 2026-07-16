@@ -9,16 +9,20 @@ export type EventCreateProps = {
     //outfits: Outfits[];
     location?: string;
     date?: Date;
-    userID?: string;
+    userId?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 };
 
 export type EventProps = {
     id: Id;
     name: Text;
     //outfits: Outfits[];
-    location: string;
+    location: Text;
     date: DomainDate;
-    userID: Id;
+    userId: Id;
+    createdAt: DomainDate;
+    updatedAt: DomainDate;
 }
 
 export class Event {
@@ -29,9 +33,11 @@ export class Event {
             id: Id.create(props.id),
             name: Text.create(props.name),
             //outfits: props.outfits.map(outfit => Outfits.create(outfit)),
-            location: props.location,
+            location: Text.create(props.location),
             date: DomainDate.create(props.date),
-            userID: Id.create(props.userID),
+            userId: Id.create(props.userId),
+            createdAt: DomainDate.create(props.createdAt),
+            updatedAt: DomainDate.create(props.updatedAt),
         };
         return new Event(EventProps);
     }
@@ -43,8 +49,25 @@ export class Event {
             //outfits: this.outfits,
             location: this.location,
             date: this.date,
-            userID: this.userID,
+            userId: this.userId,
+            createdAt: this.props.createdAt.value,
+            updatedAt: this.props.updatedAt.value,
         };
+    }
+
+    changeName(newName: string): void {
+        this.props.name = Text.create(newName);
+        this.props.updatedAt = DomainDate.create(new Date());
+    }
+
+    updateLocation(newLocation: string): void {
+        this.props.location = Text.create(newLocation);
+        this.props.updatedAt = DomainDate.create(new Date());
+    }
+
+    updateDate(newDate: Date): void {
+        this.props.date = DomainDate.create(newDate);
+        this.props.updatedAt = DomainDate.create(new Date());
     }
 
     get id() {
@@ -60,14 +83,22 @@ export class Event {
     }*/
 
     get location() {
-        return this.props.location;
+        return this.props.location.value;
     }
 
     get date() {
         return this.props.date.value;
     }
 
-    get userID() {
-        return this.props.userID.value;
+    get userId() {
+        return this.props.userId.value;
+    }
+
+    get createdAt() {
+        return this.props.createdAt.value;
+    }
+
+    get updatedAt() {
+        return this.props.updatedAt.value;
     }
 }

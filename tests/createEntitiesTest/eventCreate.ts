@@ -19,7 +19,9 @@ export const validEventProp = {
     ],
     location: 'Test Location',
     date: new Date(),
-    userID: 'user-id',
+    userId: 'user-id',
+    createdAt: new Date(),
+    updatedAt: new Date(),
 };
 
 export function createTestEvent(overrideProps: Partial<EventCreateProps> = {}) {
