@@ -1,4 +1,5 @@
 import { Event, EventCreateProps } from '@/../src/domain/entities/Event/Event';
+import { testUserId } from '@/../tests/createEntitiesTest/userCreate';
 
 export const validEventProp = {
     id: 'event-id',
@@ -19,7 +20,7 @@ export const validEventProp = {
     ],
     location: 'Test Location',
     date: new Date(),
-    userId: 'user-id',
+    userId: testUserId,
     createdAt: new Date(),
     updatedAt: new Date(),
 };
