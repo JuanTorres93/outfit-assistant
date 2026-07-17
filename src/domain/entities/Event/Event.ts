@@ -50,8 +50,8 @@ export class Event {
             location: this.location,
             date: this.date,
             userId: this.userId,
-            createdAt: this.props.createdAt.value,
-            updatedAt: this.props.updatedAt.value,
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
         };
     }
 
