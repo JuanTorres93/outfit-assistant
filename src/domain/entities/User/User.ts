@@ -71,6 +71,10 @@ export class User {
     this.props.updatedAt = now;
   }
 
+  clone(): User {
+    return User.create(this.toCreateProps());
+  }
+
   toCreateProps(): UserCreateProps {
     return {
       id: this.id,

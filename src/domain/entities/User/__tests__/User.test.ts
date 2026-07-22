@@ -50,6 +50,14 @@ describe('User', () => {
       expect(userWithoutUpdatedAt.updatedAt).toBeInstanceOf(Date);
       expect(userWithoutUpdatedAt.updatedAt.getTime()).toBeLessThanOrEqual(Date.now());
     });
+
+    it('should clone itself as a new entity', async () => {
+      const clonedUser = user.clone();
+
+      expect(clonedUser).toBeInstanceOf(User);
+      expect(clonedUser).not.toBe(user);
+      expect(clonedUser.toCreateProps()).toEqual(user.toCreateProps());
+    });
   });
 
   describe('Behaviour', () => {
