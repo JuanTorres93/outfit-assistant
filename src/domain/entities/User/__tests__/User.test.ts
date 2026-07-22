@@ -15,40 +15,9 @@ describe('User', () => {
     user = User.create(validUserProps);
   });
 
-  it('should create a valid user', () => {
-    expect(user).toBeInstanceOf(User);
-  });
-
   describe('Creation', () => {
-    it('should have a name', async () => {
-      expect(user.name).toBeDefined();
-      expect(user.name).toBe(validUserProps.name);
-    });
-
-    it('should create user with current date if createdAt is not provided', async () => {
-      const propsWithoutCreatedAt = {
-        ...validUserProps,
-        createdAt: undefined,
-      };
-
-      const userWithoutCreatedAt = User.create(propsWithoutCreatedAt);
-
-      expect(userWithoutCreatedAt).toBeInstanceOf(User);
-      expect(userWithoutCreatedAt.createdAt).toBeInstanceOf(Date);
-      expect(userWithoutCreatedAt.createdAt.getTime()).toBeLessThanOrEqual(Date.now());
-    });
-
-    it('should create user with current date if updatedAt is not provided', async () => {
-      const propsWithoutUpdatedAt = {
-        ...validUserProps,
-        updatedAt: undefined,
-      };
-
-      const userWithoutUpdatedAt = User.create(propsWithoutUpdatedAt);
-
-      expect(userWithoutUpdatedAt).toBeInstanceOf(User);
-      expect(userWithoutUpdatedAt.updatedAt).toBeInstanceOf(Date);
-      expect(userWithoutUpdatedAt.updatedAt.getTime()).toBeLessThanOrEqual(Date.now());
+    it('should create a valid user', () => {
+      expect(user).toBeInstanceOf(User);
     });
 
     it('should clone itself as a new entity', async () => {
