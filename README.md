@@ -2,6 +2,14 @@
 
 Suggest relevant outfits according to user preferences, weather, and events.
 
+## Installation
+
+Requires **Node.js** and **npm**.
+
+```sh
+npm install
+```
+
 ## Architecture
 
 The project follows **Clean Architecture** with **Domain-Driven Design**:
