@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { outfitTestCreateProps, testOutfitId } from '@/../tests/createEntitiesTest/outfitCreate';
-import { AlreadyExistsDomainError, NotFoundDomainError } from '@/domain/common/domainErrors';
+import { AlreadyExistsDomainError, NotFoundDomainError, ValidationDomainError } from '@/domain/common/domainErrors';
 
 import { Outfit, OutfitCreateProps } from '../Outfit';
 
@@ -72,8 +72,8 @@ describe('Outfit', () => {
     });
 
     it('should throw a validation error when name is empty', () => {
-      expect(() => Outfit.create({ ...validOutfitProps, name: '' })).toThrow();
-      expect(() => Outfit.create({ ...validOutfitProps, name: '   ' })).toThrow();
+      expect(() => Outfit.create({ ...validOutfitProps, name: '' })).toThrow(ValidationDomainError);
+      expect(() => Outfit.create({ ...validOutfitProps, name: '   ' })).toThrow(ValidationDomainError);
     });
   });
 
