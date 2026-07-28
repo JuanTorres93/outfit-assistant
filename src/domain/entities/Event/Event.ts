@@ -70,6 +70,10 @@ export class Event {
         this.props.updatedAt = DomainDate.create(new Date());
     }
 
+    clone(): Event {
+        return Event.create(this.toCreateProps());
+    }
+
     get id() {
         return this.props.id.value;
     }
