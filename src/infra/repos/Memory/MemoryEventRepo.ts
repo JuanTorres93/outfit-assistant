@@ -13,6 +13,12 @@ export class MemoryEventRepo implements EventsRepo {
         return event?.clone() || null;
     }
 
+    async getByName(name: string): Promise<Event | null> {
+        const event = this.events.find(event => event.name === name);
+
+        return event?.clone() || null;
+    }
+
     async save(event: Event): Promise<void>
     {
         const existingEventIndex = this.events.findIndex((eventInRepo) => eventInRepo.id === event.id);

@@ -2,6 +2,7 @@ import { describe, expect, it, beforeEach } from 'vitest';
 
 import { validEventProp } from '@/../tests/createEntitiesTest/eventCreate';
 import { Event, EventCreateProps } from '../Event';
+import { AlreadyExistsDomainError, NotFoundDomainError } from '@/domain/common/domainErrors';
 
 describe("Event", () => {
     let event: Event;
@@ -18,6 +19,26 @@ describe("Event", () => {
         expect(event).toBeInstanceOf(Event);
     });
 
+    describe('Creation', () => {
+        it('should create event with no outfits if outfitIds is not provided', () => {
+            const propsWithoutOutfitsIds = {
+                ...validEventProps,
+                outfitIds: undefined,
+            };
+
+            const eventWithoutOutfitIds = Event.create(propsWithoutOutfitsIds);
+
+            expect(eventWithoutOutfitIds.outfitIds).toEqual([]);
+        });
+
+        it('should throw an error when outfitIds contains a duplicade id', () => {
+            expect(() => Event.create({...validEventProps, outfitIds: ['same-outfit-id', 'same-outfit-id'],
+
+            }),
+        ).toThrow(AlreadyExistsDomainError);
+        })
+    })
+
     describe('Get', () => {
         it('should return the correct id', () => {
             expect(event.id).toBe(validEventProps.id);
@@ -27,9 +48,9 @@ describe("Event", () => {
             expect(event.name).toBe(validEventProps.name);
         });
 
-        /*it('should return the correct outfits', () => {
-            expect(event.outfits).toEqual(validEventProps.outfits);
-        });*/
+        it('should return the correct outfits', () => {
+            expect(event.outfitIds).toEqual(validEventProps.outfitIds);
+        });
         it('should return the correct location', () => {
             expect(event.location).toBe(validEventProps.location);
         });
@@ -68,5 +89,25 @@ describe("Event", () => {
             event.updateDate(newDate);
             expect(event.date).toEqual(newDate);
         });
+        describe('Outfits', () => {
+            it('should add an outfit', () => {
+                const newOutfitId = 'New Outfit Id';
+                event.addOutfit(newOutfitId);
+                expect(event.outfitIds).toContain(newOutfitId);
+            });
+            it('should throw an error when adding an outfit id already in the event', () => {
+                expect(() => event.addOutfit('outfit-id-1')).toThrow(AlreadyExistsDomainError);
+            });
+            it('should remove an outfit', () => {
+                const outfitToRemove = 'outfit-id-1';
+                event.removeOutfit(outfitToRemove);
+                expect(event.outfitIds).not.toContain('outfit-id-1');
+            });
+            it('should throw an error when removing a outfit id not in the event', () => {
+                expect(() => event.removeOutfit('random-id')).toThrow(NotFoundDomainError);
+            })
+
+        });
+        
     });
 })

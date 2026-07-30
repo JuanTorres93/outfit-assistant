@@ -76,6 +76,20 @@ repos.forEach(({ name, repoClass }) => {
             });
         });
 
+        describe('getByName', () => {
+            it('should return an event by name', async() => {
+                const foundEvent = await repo.getByName(event.name);
+
+                expect(foundEvent).toEqual(event);
+            });
+
+            it('should return null if event is not found', async() => {
+                const foundEvent = await repo.getByName('name-that-doesnt-exist');
+
+                expect(foundEvent).toBeNull();
+            })
+        })
+
         describe('deleteById', () => {
             it('should delete an event by id', async () => {
                 await repo.deleteById(event.id);
