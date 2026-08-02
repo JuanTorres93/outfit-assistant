@@ -114,4 +114,8 @@ export class Garment {
   get updatedAt() {
     return this.props.updatedAt.value;
   }
+
+  clone(): Garment {
+    return Garment.create(this.toCreateProps());
+  }
 }
