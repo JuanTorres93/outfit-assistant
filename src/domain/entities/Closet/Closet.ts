@@ -72,6 +72,10 @@ export class Closet {
     return this.props.garmentIds.some((existingId) => existingId.equals(id));
   }
 
+  clone(): Closet {
+    return Closet.create(this.toCreateProps());
+  }
+
   toCreateProps(): ClosetCreateProps {
     return {
       id: this.id,
