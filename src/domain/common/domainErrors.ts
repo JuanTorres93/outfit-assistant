@@ -11,3 +11,5 @@ export class PermissionDomainError extends DomainError {}
 export class AlreadyExistsDomainError extends DomainError {}
 
 export class NotFoundDomainError extends DomainError {}
+
+export class InfrastructureDomainError extends DomainError {}
