@@ -1,6 +1,6 @@
-import { DomainDate } from '../../value-objects/DomainDate/DomainDate';
-import { Id } from '../../value-objects/Id/Id';
-import { Text } from '../../value-objects/Text/Text';
+import { DomainDate } from '@/domain/value-objects/DomainDate/DomainDate';
+import { Id } from '@/domain/value-objects/Id/Id';
+import { Text, TextOptions } from '@/domain/value-objects/Text/Text';
 
 export type GarmentCreateProps = {
   id: string;
@@ -34,6 +34,11 @@ export type GarmentProps = {
   updatedAt: DomainDate;
 };
 
+export const nameTextOptions: TextOptions = {
+  maxLength: 100,
+  canBeEmpty: false,
+};
+
 export class Garment {
   private constructor(private readonly props: GarmentProps) {}
 
@@ -41,7 +46,7 @@ export class Garment {
     const entityProps: GarmentProps = {
       id: Id.create(props.id),
 
-      name: Text.create(props.name),
+      name: Text.create(props.name, nameTextOptions),
       category: Text.create(props.category),
       colors: props.colors.map((color) => Text.create(color)),
 
@@ -56,7 +61,12 @@ export class Garment {
 
     return new Garment(entityProps);
   }
-
+  
+  changeName(newName: string): void {
+    this.props.name = Text.create(newName, nameTextOptions);
+    this.props.updatedAt = DomainDate.create();
+  }
+  
   toCreateProps(): GarmentCreateProps {
     return {
       id: this.id,
@@ -113,5 +123,9 @@ export class Garment {
 
   get updatedAt() {
     return this.props.updatedAt.value;
+  }
+
+  clone(): Garment {
+    return Garment.create(this.toCreateProps());
   }
 }
