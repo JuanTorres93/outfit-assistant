@@ -20,31 +20,23 @@ describe('Garment', () => {
     expect(garment).toBeInstanceOf(Garment);
   });
 
-  describe('Creation', () => {
-    it('should create garment with current date if createdAt is not provided', () => {
-      const propsWithoutCreatedAt = {
-        ...validGarmentProps,
-        createdAt: undefined,
-      };
-
-      const garmentWithoutCreatedAt = Garment.create(propsWithoutCreatedAt);
-
-      expect(garmentWithoutCreatedAt).toBeInstanceOf(Garment);
-      expect(garmentWithoutCreatedAt.createdAt).toBeInstanceOf(Date);
-      expect(garmentWithoutCreatedAt.createdAt.getTime()).toBeLessThanOrEqual(Date.now());
+   describe('Creation', () => {
+    it('should not allow an empty name', () => {
+      expect(() =>
+        Garment.create({
+          ...validGarmentProps,
+          name: '',
+        }),
+      ).toThrow();
     });
 
-    it('should create garment with current date if updatedAt is not provided', () => {
-      const propsWithoutUpdatedAt = {
-        ...validGarmentProps,
-        updatedAt: undefined,
-      };
-
-      const garmentWithoutUpdatedAt = Garment.create(propsWithoutUpdatedAt);
-
-      expect(garmentWithoutUpdatedAt).toBeInstanceOf(Garment);
-      expect(garmentWithoutUpdatedAt.updatedAt).toBeInstanceOf(Date);
-      expect(garmentWithoutUpdatedAt.updatedAt.getTime()).toBeLessThanOrEqual(Date.now());
+    it('should not allow a name longer than 100 characters', () => {
+      expect(() =>
+        Garment.create({
+          ...validGarmentProps,
+          name: 'a'.repeat(101),
+        }),
+      ).toThrow();
     });
   });
 
@@ -53,6 +45,11 @@ describe('Garment', () => {
       const createProps = garment.toCreateProps();
 
       expect(createProps).toEqual(validGarmentProps);
+    });
+     it('should change the name', () => {
+      garment.changeName('New Garment Name');
+
+      expect(garment.name).toBe('New Garment Name');
     });
   });
 

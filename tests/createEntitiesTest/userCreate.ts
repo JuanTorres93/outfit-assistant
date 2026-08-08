@@ -5,8 +5,11 @@ export const securePassword = 'S€Cure-p4ssword';
 
 export const userTestCreateProps = {
   id: testUserId,
+
+  name: 'Test User',
   email: 'test.user@example.com',
   hashedPassword: 'super-secure-hashed-password',
+
   createdAt: new Date(),
   updatedAt: new Date(),
 };
