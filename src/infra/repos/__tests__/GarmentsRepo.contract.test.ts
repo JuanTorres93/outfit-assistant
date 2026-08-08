@@ -84,24 +84,6 @@ repos.forEach(({ name, repoClass }) => {
       });
     });
 
-    describe('getByName', () => {
-      it('should return a garment by name', async () => {
-        const foundGarment = await repo.getByName(
-          garment.name,
-        );
-
-        expect(foundGarment).toEqual(garment);
-      });
-
-      it('should return null if garment is not found', async () => {
-        const foundGarment = await repo.getByName(
-          'name-that-doesnt-exist',
-        );
-
-        expect(foundGarment).toBeNull();
-      });
-    });
-
     describe('deleteById', () => {
       it('should delete a garment by id', async () => {
         await repo.deleteById(garment.id);

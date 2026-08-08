@@ -14,12 +14,6 @@ export class MemoryGarmentRepo implements GarmentsRepo {
     return garment?.clone() || null;
   }
 
-  async getByName(name: string): Promise<Garment | null> {
-    const garment = this.garments.find((garment) => garment.name === name);
-
-    return garment?.clone() || null;
-  }
-
   async save(garment: Garment): Promise<void> {
     const existingGarmentIndex = this.garments.findIndex(
       (garmentInRepo) => garmentInRepo.id === garment.id,
