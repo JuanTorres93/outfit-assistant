@@ -13,6 +13,9 @@ export type UserCreateProps = {
   hashedPassword: string;
 
   passwordChangedAt?: Date;
+  passwordResetToken?: string;
+  passwordResetTokenExpiresAt?: Date;
+
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -25,6 +28,9 @@ export type UserProps = {
   hashedPassword: HashedPassword;
 
   passwordChangedAt?: DomainDate;
+  passwordResetToken?: Text;
+  passwordResetTokenExpiresAt?: DomainDate;
+
   createdAt: DomainDate;
   updatedAt: DomainDate;
 };
@@ -48,6 +54,12 @@ export class User {
       passwordChangedAt: props.passwordChangedAt
         ? DomainDate.create(props.passwordChangedAt)
         : undefined,
+      passwordResetToken: props.passwordResetToken
+        ? Text.create(props.passwordResetToken)
+        : undefined,
+      passwordResetTokenExpiresAt: props.passwordResetTokenExpiresAt
+        ? DomainDate.create(props.passwordResetTokenExpiresAt)
+        : undefined,
 
       createdAt: DomainDate.create(props.createdAt),
       updatedAt: DomainDate.create(props.updatedAt),
@@ -69,6 +81,18 @@ export class User {
 
     this.props.passwordChangedAt = now;
     this.props.updatedAt = now;
+  }
+
+  changePassword(newHashedPassword: string): void {
+    this.props.hashedPassword = HashedPassword.create(newHashedPassword);
+
+    const now = DomainDate.create();
+
+    this.props.passwordChangedAt = now;
+    this.props.updatedAt = now;
+
+    this.props.passwordResetToken = undefined;
+    this.props.passwordResetTokenExpiresAt = undefined;
   }
 
   clone(): User {
@@ -108,6 +132,14 @@ export class User {
 
   get passwordChangedAt() {
     return this.props.passwordChangedAt?.value;
+  }
+
+  get passwordResetToken() {
+    return this.props.passwordResetToken?.value;
+  }
+
+  get passwordResetTokenExpiresAt() {
+    return this.props.passwordResetTokenExpiresAt?.value;
   }
 
   get createdAt() {
