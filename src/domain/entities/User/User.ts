@@ -40,6 +40,11 @@ export const nameTextOptions: TextOptions = {
   canBeEmpty: false,
 };
 
+export const passwordResetTokenTextOptions: TextOptions = {
+  canBeEmpty: true,
+  maxLength: 100,
+};
+
 export class User {
   private constructor(private readonly props: UserProps) {}
 
@@ -93,6 +98,15 @@ export class User {
 
     this.props.passwordResetToken = undefined;
     this.props.passwordResetTokenExpiresAt = undefined;
+  }
+
+  forgotPassword(hashedResetToken: string): void {
+    const expiresAt = new Date(Date.now() + FORGOT_PASSWORD_CHANGE_WINDOW_MINUTES * 60 * 1000);
+
+    this.props.passwordResetToken = Text.create(hashedResetToken, passwordResetTokenTextOptions);
+    this.props.passwordResetTokenExpiresAt = DomainDate.create(expiresAt);
+
+    this.props.updatedAt = DomainDate.create();
   }
 
   clone(): User {
@@ -150,3 +164,5 @@ export class User {
     return this.props.updatedAt.value;
   }
 }
+
+export const FORGOT_PASSWORD_CHANGE_WINDOW_MINUTES = 10;

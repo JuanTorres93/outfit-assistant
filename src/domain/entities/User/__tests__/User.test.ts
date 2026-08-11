@@ -94,5 +94,67 @@ describe('User', () => {
         expect(userWithResetTokenExpiry.passwordResetTokenExpiresAt).toBeUndefined();
       });
     });
+
+    describe('Forgot password', () => {
+      it('should set passwordResetToken', async () => {
+        const userWithoutResetToken = createTestUser({
+          passwordResetToken: undefined,
+        });
+
+        expect(userWithoutResetToken.passwordResetToken).toBeUndefined();
+
+        userWithoutResetToken.forgotPassword('hashed-reset-token');
+
+        expect(userWithoutResetToken.passwordResetToken).toBe('hashed-reset-token');
+      });
+
+      it('should set passwordResetTokenExpiresAt', async () => {
+        const userWithoutResetToken = createTestUser({
+          passwordResetTokenExpiresAt: undefined,
+        });
+
+        expect(userWithoutResetToken.passwordResetTokenExpiresAt).toBeUndefined();
+
+        userWithoutResetToken.forgotPassword('hashed-reset-token');
+
+        expect(userWithoutResetToken.passwordResetTokenExpiresAt).toBeDefined();
+      });
+
+      it('should update updatedAt', () => {
+        const userWithoutResetToken = createTestUser({
+          passwordResetToken: undefined,
+        });
+
+        const initialUpdatedAt = userWithoutResetToken.updatedAt;
+
+        userWithoutResetToken.forgotPassword('hashed-reset-token');
+
+        expect(userWithoutResetToken.updatedAt).not.toBe(initialUpdatedAt);
+      });
+
+      it('should not change passwordChangedAt', () => {
+        const userWithoutResetToken = createTestUser({
+          passwordResetToken: undefined,
+        });
+
+        const initialPasswordChangedAt = userWithoutResetToken.passwordChangedAt;
+
+        userWithoutResetToken.forgotPassword('hashed-reset-token');
+
+        expect(userWithoutResetToken.passwordChangedAt).toBe(initialPasswordChangedAt);
+      });
+
+      it('should not change hashedPassword', () => {
+        const userWithoutResetToken = createTestUser({
+          passwordResetToken: undefined,
+        });
+
+        const initialHashedPassword = userWithoutResetToken.hashedPassword;
+
+        userWithoutResetToken.forgotPassword('hashed-reset-token');
+
+        expect(userWithoutResetToken.hashedPassword).toBe(initialHashedPassword);
+      });
+    });
   });
 });
