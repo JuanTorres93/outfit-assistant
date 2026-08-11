@@ -20,6 +20,12 @@ export class MemoryUsersRepo implements UsersRepo {
     return user?.clone() || null;
   }
 
+  async getByPasswordResetToken(token: string): Promise<User | null> {
+    const user = this.users.find((user) => user.passwordResetToken === token);
+
+    return user?.clone() || null;
+  }
+
   async save(user: User): Promise<void> {
     const existingUserIndex = this.users.findIndex((userInRepo) => userInRepo.id === user.id);
 
