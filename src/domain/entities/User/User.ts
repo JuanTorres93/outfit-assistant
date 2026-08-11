@@ -122,6 +122,8 @@ export class User {
       hashedPassword: this.hashedPassword,
 
       passwordChangedAt: this.passwordChangedAt,
+      passwordResetToken: this.passwordResetToken,
+      passwordResetTokenExpiresAt: this.passwordResetTokenExpiresAt,
 
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
