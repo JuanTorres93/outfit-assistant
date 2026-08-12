@@ -1,4 +1,4 @@
-import { AlreadyExistsApplicationError } from "@/application-layer/common/applicationErrors";
+import { AlreadyExistsDomainError } from "../../common/domainErrors";
 import { Id } from "../../value-objects/Id/Id";
 import { Text } from "../../value-objects/Text/Text"
 import { DomainDate } from "@/domain/value-objects/DomainDate/DomainDate";
@@ -72,7 +72,7 @@ export class Event {
 
         if (this.props.outfitIds.some(existingId => existingId.equals(id)))
         {
-            throw new AlreadyExistsApplicationError(`Event already contains outfit with id ${outfitId}`);
+            throw new AlreadyExistsDomainError(`Event already contains outfit with id ${outfitId}`);
         }
 
         this.props.outfitIds.push(id);
@@ -154,7 +154,7 @@ function assertNoDuplicateOutfitIds(outfitIds: Id[]): void
     for (const outfitId of outfitIds) {
         if(seen.has(outfitId.value)) 
         {
-            throw new AlreadyExistsApplicationError(`Duplicate outfit id ${outfitId.value} in event`);
+            throw new AlreadyExistsDomainError(`Duplicate outfit id ${outfitId.value} in event`);
         }
 
         seen.add(outfitId.value);

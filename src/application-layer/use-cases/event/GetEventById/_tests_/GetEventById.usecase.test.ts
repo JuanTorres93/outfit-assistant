@@ -6,19 +6,19 @@ import { createTestEvent } from 'tests/createEntitiesTest/eventCreate';
 
 describe('GetEventByIdUseCase', () => {
     let getEventByIdUseCase: GetEventByIdUseCase;
-    let EventRepo: MemoryEventRepo;
+    let eventRepo: MemoryEventRepo;
 
 
     beforeEach(() => {
-        EventRepo = new MemoryEventRepo();
-        getEventByIdUseCase = new GetEventByIdUseCase(EventRepo);
+        eventRepo = new MemoryEventRepo();
+        getEventByIdUseCase = new GetEventByIdUseCase(eventRepo);
     });
 
     describe('Execute', () => {
         it('should return an event when found', async () => {
             const event = createTestEvent();
 
-            await EventRepo.save(event);
+            await eventRepo.save(event);
 
             const result = await getEventByIdUseCase.execute({ eventId: event.id });
 

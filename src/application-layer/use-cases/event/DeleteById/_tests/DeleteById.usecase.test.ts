@@ -6,24 +6,39 @@ import { createTestEvent } from 'tests/createEntitiesTest/eventCreate';
 
 describe('DeleteEventByIdUseCase', () => {
     let deleteEventByIdUseCase: DeleteEventByIdUseCase;
-    let EventRepo: MemoryEventRepo;
+    let eventRepo: MemoryEventRepo;
 
     beforeEach(() => {
-        EventRepo = new MemoryEventRepo();
-        deleteEventByIdUseCase = new DeleteEventByIdUseCase(EventRepo);
+        eventRepo = new MemoryEventRepo();
+        deleteEventByIdUseCase = new DeleteEventByIdUseCase(eventRepo);
     });
 
     describe('Execute', () => {
         it('should delete an event when found', async () => {
             const event = createTestEvent();
-            await EventRepo.save(event);
+            await eventRepo.save(event);
 
             await deleteEventByIdUseCase.execute({ eventId: event.id });
 
-            const deletedEvent = await EventRepo.getById(event.id);
+            const deletedEvent = await eventRepo.getById(event.id);
             expect(deletedEvent).toBeUndefined();
         });
     });
+
+    describe('Side Effects', () => {
+        it('should have the event removed from the repository', async () => {
+            const eventsBefore = await eventRepo.getAll();
+            expect(eventsBefore.length).toBe(1);
+
+            const newEvent = await deleteEventByIdUseCase.execute({
+                eventId: 'event-123',
+            });
+            const eventsAfter = await eventRepo.getAll();
+            expect(eventsAfter.length).toBe(0);
+        });
+    });
+
+    
 
     describe('Errors', () => {
         it('should throw NotFoundDomainError when event is not found', async () => {

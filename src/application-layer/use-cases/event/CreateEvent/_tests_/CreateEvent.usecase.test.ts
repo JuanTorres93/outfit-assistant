@@ -8,15 +8,15 @@ import { Event } from '@/domain/entities/Event/Event';
 
 describe('CreateEventUseCase', () => {
     let createEventUseCase: CreateEventUseCase;
-    let EventRepo: MemoryEventRepo;
+    let eventRepo: MemoryEventRepo;
     let idGenerator: CryptoUUIDIdGenerator;
 
     let event: Event;
 
     beforeEach(async () => {
-        EventRepo = new MemoryEventRepo();
+        eventRepo = new MemoryEventRepo();
         idGenerator = new CryptoUUIDIdGenerator();
-        createEventUseCase = new CreateEventUseCase(EventRepo, idGenerator);
+        createEventUseCase = new CreateEventUseCase(eventRepo, idGenerator);
 
         event = await createEventUseCase.execute({
             name: validEventProp.name,
@@ -34,5 +34,20 @@ describe('CreateEventUseCase', () => {
             expect(event.createdAt).toBeDefined();
             expect(event.updatedAt).toBeDefined();
         }); 
+    });
+
+    describe('Side Effects', () => {
+        it('should persist the event in the repository', async () => {
+            const eventsBefore = await eventRepo.getAll();
+            expect(eventsBefore.length).toBe(1);
+
+            const newEvent = await createEventUseCase.execute({
+                name: 'Another Event',
+                userId: 'user-456',
+                outfitIds: ['outfit-3'],
+            });
+            const eventsAfter = await eventRepo.getAll();
+            expect(eventsAfter.length).toBe(2);
+        });
     });
 });
