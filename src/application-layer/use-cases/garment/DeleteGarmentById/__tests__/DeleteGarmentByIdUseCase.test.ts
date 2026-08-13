@@ -28,22 +28,26 @@ describe('DeleteGarmentByIdUseCase', () => {
   });
 
   describe('Execute', () => {
-    it('should delete the garment by id', async () => {
-      await deleteGarmentByIdUseCase.execute({
-        garmentId: garment.id,
-      });
+  it('should delete the garment by id', async () => {
+    const existingGarment = await garmentRepo.getById(garment.id);
 
-      const deletedGarment = await garmentRepo.getById(garment.id);
+    expect(existingGarment).not.toBeNull();
 
-      expect(deletedGarment).toBeNull();
+    await deleteGarmentByIdUseCase.execute({
+      garmentId: garment.id,
     });
 
-    it('should throw NotFoundDomainError when garment does not exist', async () => {
-      await expect(
-        deleteGarmentByIdUseCase.execute({
-          garmentId: 'non-existent-id',
-        }),
-      ).rejects.toThrow(NotFoundDomainError);
-    });
+    const deletedGarment = await garmentRepo.getById(garment.id);
+
+    expect(deletedGarment).toBeNull();
   });
+
+  it('should throw NotFoundDomainError when garment does not exist', async () => {
+    await expect(
+      deleteGarmentByIdUseCase.execute({
+        garmentId: 'non-existent-id',
+      }),
+    ).rejects.toThrow(NotFoundDomainError);
+  });
+});
 });
