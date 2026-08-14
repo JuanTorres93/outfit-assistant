@@ -107,6 +107,28 @@ repos.forEach(({ name, repoClass }) => {
       });
     });
 
+    describe('getUserByPasswordResetToken', () => {
+      it('should retrieve a user by password reset token', async () => {
+        const token = 'reset-token-123';
+        const userWithToken = createTestUser({
+          id: 'user-with-token',
+          email: 'tokenuser@example.com',
+          passwordResetToken: token,
+        });
+        await repo.save(userWithToken);
+
+        const fetchedUser = await repo.getByPasswordResetToken(token);
+        expect(fetchedUser).not.toBeNull();
+        expect(fetchedUser?.id).toBe(userWithToken.id);
+        expect(fetchedUser?.passwordResetToken).toBe(token);
+      });
+
+      it('should return null for non-existent password reset token', async () => {
+        const fetchedUser = await repo.getByPasswordResetToken('non-existent-token');
+        expect(fetchedUser).toBeNull();
+      });
+    });
+
     describe('deleteById', () => {
       it('should delete a user by id', async () => {
         await repo.deleteById(user.id);
