@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { userTestCreateProps } from '@/../tests/createEntitiesTest/userCreate';
+import { createTestUser, userTestCreateProps } from '@/../tests/createEntitiesTest/userCreate';
 
 import { User, UserCreateProps } from '../User';
 
@@ -37,21 +37,124 @@ describe('User', () => {
       expect(user.name).toBe(newName);
     });
 
-    it('should update password', async () => {
-      const newPassword = 'newSecureAndHashedPassword';
-      user.updatePassword(newPassword);
-
-      expect(user.hashedPassword).toBe(newPassword);
-
-      expect(user.updatedAt.getTime()).toBeLessThanOrEqual(Date.now());
-
-      expect(user.passwordChangedAt?.getTime()).toBeLessThanOrEqual(Date.now());
-    });
-
     it('should convert to create props', async () => {
       const createProps = user.toCreateProps();
 
       expect(createProps).toEqual(validUserProps);
+    });
+
+    describe('Password change', () => {
+      const newHashedPassword = 'new-hashed-password-123';
+
+      it('should update hashedPassword', async () => {
+        expect(user.hashedPassword).not.toBe(newHashedPassword);
+
+        user.changePassword(newHashedPassword);
+
+        expect(user.hashedPassword).toBe(newHashedPassword);
+      });
+
+      it('should update passwordChangedAt when changing password', async () => {
+        const initialPasswordChangedAt = user.passwordChangedAt;
+
+        user.changePassword(newHashedPassword);
+
+        expect(user.passwordChangedAt).not.toBe(initialPasswordChangedAt);
+      });
+
+      it('should update updatedAt when changing password', () => {
+        const initialUpdatedAt = user.updatedAt;
+
+        user.changePassword(newHashedPassword);
+
+        expect(user.updatedAt).not.toBe(initialUpdatedAt);
+      });
+
+      it('should clear reset token', () => {
+        const userWithResetToken = createTestUser({
+          passwordResetToken: 'reset-token',
+        });
+
+        expect(userWithResetToken.passwordResetToken).toBe('reset-token');
+
+        userWithResetToken.changePassword(newHashedPassword);
+
+        expect(userWithResetToken.passwordResetToken).toBeUndefined();
+      });
+
+      it('should clear reset token expiry', () => {
+        const userWithResetTokenExpiry = createTestUser({
+          passwordResetTokenExpiresAt: new Date(Date.now() + 3600000),
+        });
+
+        expect(userWithResetTokenExpiry.passwordResetTokenExpiresAt).toBeDefined();
+
+        userWithResetTokenExpiry.changePassword(newHashedPassword);
+
+        expect(userWithResetTokenExpiry.passwordResetTokenExpiresAt).toBeUndefined();
+      });
+    });
+
+    describe('Forgot password', () => {
+      it('should set passwordResetToken', async () => {
+        const userWithoutResetToken = createTestUser({
+          passwordResetToken: undefined,
+        });
+
+        expect(userWithoutResetToken.passwordResetToken).toBeUndefined();
+
+        userWithoutResetToken.forgotPassword('hashed-reset-token');
+
+        expect(userWithoutResetToken.passwordResetToken).toBe('hashed-reset-token');
+      });
+
+      it('should set passwordResetTokenExpiresAt', async () => {
+        const userWithoutResetToken = createTestUser({
+          passwordResetTokenExpiresAt: undefined,
+        });
+
+        expect(userWithoutResetToken.passwordResetTokenExpiresAt).toBeUndefined();
+
+        userWithoutResetToken.forgotPassword('hashed-reset-token');
+
+        expect(userWithoutResetToken.passwordResetTokenExpiresAt).toBeDefined();
+      });
+
+      it('should update updatedAt', () => {
+        const userWithoutResetToken = createTestUser({
+          passwordResetToken: undefined,
+        });
+
+        const initialUpdatedAt = userWithoutResetToken.updatedAt;
+
+        userWithoutResetToken.forgotPassword('hashed-reset-token');
+
+        expect(userWithoutResetToken.updatedAt).not.toBe(initialUpdatedAt);
+      });
+
+      it('should not change passwordChangedAt', () => {
+        const userWithoutResetToken = createTestUser({
+          passwordResetToken: undefined,
+        });
+
+        const initialPasswordChangedAt = userWithoutResetToken.passwordChangedAt;
+
+        userWithoutResetToken.forgotPassword('hashed-reset-token');
+
+        expect(userWithoutResetToken.passwordChangedAt).toBe(initialPasswordChangedAt);
+      });
+
+      it('should not change hashedPassword', () => {
+        const userWithoutResetToken = createTestUser({
+          passwordResetToken: undefined,
+        });
+
+        const initialHashedPassword = userWithoutResetToken.hashedPassword;
+
+        userWithoutResetToken.forgotPassword('hashed-reset-token');
+
+        expect(userWithoutResetToken.hashedPassword).toBe(initialHashedPassword);
+      });
     });
   });
 });
