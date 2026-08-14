@@ -76,17 +76,17 @@ repos.forEach(({ name, repoClass }) => {
             });
         });
 
-        describe('getByName', () => {
-            it('should return an event by name', async() => {
-                const foundEvent = await repo.getByName(event.name);
+        describe('getByUserId', () => {
+            it('should return all events made by user id', async() => {
+                const foundEvents = await repo.getByUserId(event.userId);
 
-                expect(foundEvent).toEqual(event);
+                expect(foundEvents).toEqual([event]);
             });
 
-            it('should return null if event is not found', async() => {
-                const foundEvent = await repo.getByName('name-that-doesnt-exist');
+            it('should return an empty array if no events are found for the user id', async() => {
+                const foundEvents = await repo.getByUserId('user-id-that-doesnt-exist');
 
-                expect(foundEvent).toBeNull();
+                expect(foundEvents).toEqual(null);
             })
         })
 

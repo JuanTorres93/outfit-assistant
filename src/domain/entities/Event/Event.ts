@@ -68,9 +68,10 @@ export class Event {
   addOutfit(outfitId: string): void {
     const id = Id.create(outfitId);
 
-    if (this.props.outfitIds.some((existingId) => existingId.equals(id))) {
-      throw new AlreadyExistsDomainError(`Event already contains outfit with id ${outfitId}`);
-    }
+        if (this.props.outfitIds.some(existingId => existingId.equals(id)))
+        {
+            throw new AlreadyExistsDomainError(`Event already contains outfit with id ${outfitId}`);
+        }
 
     this.props.outfitIds.push(id);
     this.props.updatedAt = DomainDate.create();
@@ -144,10 +145,11 @@ export class Event {
 function assertNoDuplicateOutfitIds(outfitIds: Id[]): void {
   const seen = new Set<string>();
 
-  for (const outfitId of outfitIds) {
-    if (seen.has(outfitId.value)) {
-      throw new AlreadyExistsDomainError(`Duplicate outfit id ${outfitId.value} in event`);
-    }
+    for (const outfitId of outfitIds) {
+        if(seen.has(outfitId.value)) 
+        {
+            throw new AlreadyExistsDomainError(`Duplicate outfit id ${outfitId.value} in event`);
+        }
 
     seen.add(outfitId.value);
   }
