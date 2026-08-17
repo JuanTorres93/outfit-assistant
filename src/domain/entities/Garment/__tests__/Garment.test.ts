@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import { ValidationDomainError } from '@/domain/common/domainErrors';
+
 import { garmentTestCreateProps } from '@/../tests/createEntitiesTest/garmentCreate';
 
 import { Garment, GarmentCreateProps } from '../Garment';
@@ -38,6 +40,25 @@ describe('Garment', () => {
         }),
       ).toThrow();
     });
+
+    it('should not allow invalid seasons', () => {
+      expect(() =>
+        Garment.create({
+          ...validGarmentProps,
+          seasons: ['summer', 'banana'],
+        }),
+      ).toThrow(ValidationDomainError);
+    });
+
+    it('should normalize seasons to lowercase', () => {
+      const garment = Garment.create({
+        ...validGarmentProps,
+        seasons: ['SPRING', 'Summer'],
+      });
+
+      expect(garment.seasons).toEqual(['spring', 'summer']);
+    });
+
   });
 
   describe('Behaviour', () => {

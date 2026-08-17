@@ -1,5 +1,9 @@
 import { DomainDate } from '@/domain/value-objects/DomainDate/DomainDate';
+
+import { Season } from '../../value-objects/Season/Season';
+
 import { Id } from '@/domain/value-objects/Id/Id';
+
 import { Text, TextOptions } from '@/domain/value-objects/Text/Text';
 
 export type GarmentCreateProps = {
@@ -28,7 +32,7 @@ export type GarmentProps = {
   brand?: Text;
   size?: Text;
   material?: Text;
-  seasons?: Text[];
+  seasons?: Season[];
 
   createdAt: DomainDate;
   updatedAt: DomainDate;
@@ -53,7 +57,7 @@ export class Garment {
       brand: props.brand ? Text.create(props.brand) : undefined,
       size: props.size ? Text.create(props.size) : undefined,
       material: props.material ? Text.create(props.material) : undefined,
-      seasons: props.seasons?.map((season) => Text.create(season)),
+      seasons: props.seasons?.map((season) => Season.create(season)),
 
       createdAt: DomainDate.create(props.createdAt),
       updatedAt: DomainDate.create(props.updatedAt),

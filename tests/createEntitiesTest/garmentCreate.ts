@@ -11,7 +11,7 @@ export const garmentTestCreateProps: GarmentCreateProps = {
   brand: 'Zara',
   size: 'M',
   material: 'Cotton',
-  seasons: ['Spring', 'Summer'],
+  seasons: ['spring', 'summer'],
 
   createdAt: new Date(),
   updatedAt: new Date(),
