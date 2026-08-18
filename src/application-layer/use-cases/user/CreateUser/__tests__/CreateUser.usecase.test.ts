@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { userTestCreateProps } from '@/../tests/createEntitiesTest/userCreate';
+import { userDTOProperties } from '@/../tests/dtoProperties/userDtoProperties';
+import { UserDTO } from '@/application-layer/dtos/UserDTO';
 import { IdGenerator } from '@/application-layer/services/IdGenerator.port';
 import { AlreadyExistsDomainError } from '@/domain/common/domainErrors';
 import { User } from '@/domain/entities/User/User';
@@ -16,8 +18,7 @@ describe('CreateUserUsecase', () => {
   let idGenerator: IdGenerator;
 
   let createUserUsecase: CreateUserUsecase;
-  //let user: UserDTO;
-  let user: User;
+  let user: UserDTO;
 
   const plainPassword = 'secureP@ssword123';
 
@@ -44,19 +45,18 @@ describe('CreateUserUsecase', () => {
       expect(user.updatedAt).toBeDefined();
     });
 
-    // TODO uncomment one DTOs are implemented
-    //it('should return UserDTO', async () => {
-    //  expect(user).not.toBeInstanceOf(User);
+    it('should return UserDTO', async () => {
+      expect(user).not.toBeInstanceOf(User);
 
-    //  for (const prop of userDTOProperties) {
-    //    expect(user).toHaveProperty(prop);
-    //  }
-    //});
+      for (const prop of userDTOProperties) {
+        expect(user).toHaveProperty(prop);
+      }
+    });
 
-    //it('should not expose password', () => {
-    //  // @ts-expect-error hashedPassword is not part of UserDTO
-    //  expect(user.hashedPassword).toBeUndefined();
-    //});
+    it('should not expose password', () => {
+      // @ts-expect-error hashedPassword is not part of UserDTO
+      expect(user.hashedPassword).toBeUndefined();
+    });
 
     it('user entity should have hashedPassword', async () => {
       const userEntity = await usersRepo.getById(user.id);

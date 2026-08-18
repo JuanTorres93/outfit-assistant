@@ -1,3 +1,4 @@
+import { UserDTO, toUserDTO } from '@/application-layer/dtos/UserDTO';
 import { IdGenerator } from '@/application-layer/services/IdGenerator.port';
 import { PasswordHasher } from '@/application-layer/services/PasswordHasher.port';
 import { AlreadyExistsDomainError } from '@/domain/common/domainErrors';
@@ -19,7 +20,7 @@ export class CreateUserUsecase {
     private passwordHasher: PasswordHasher,
   ) {}
 
-  async execute(request: CreateUserUsecaseRequest): Promise<User> {
+  async execute(request: CreateUserUsecaseRequest): Promise<UserDTO> {
     const validatedEmail = Email.create(request.email).value;
 
     const validatedPassword = Password.create(request.plainPassword).value;
@@ -41,7 +42,6 @@ export class CreateUserUsecase {
 
     await this.usersRepo.save(newUser);
 
-    // IMPORTANT NOTE: I forgot to tell you about DTOs in the meeting, for now we will return the entity directly, but we will change it
-    return newUser;
+    return toUserDTO(newUser);
   }
 }
