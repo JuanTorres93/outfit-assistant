@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach } from 'vitest';
 
-import { validEventProp } from '@/../tests/createEntitiesTest/eventCreate';
+import { eventTestCreateProps } from '@/../tests/createEntitiesTest/eventCreate';
 import { Event, EventCreateProps } from '../Event';
 import { AlreadyExistsDomainError, NotFoundDomainError } from '@/domain/common/domainErrors';
 
@@ -10,7 +10,7 @@ describe("Event", () => {
 
     beforeEach(() => {
         validEventProps = {
-            ...validEventProp,
+            ...eventTestCreateProps,
         };
         event = Event.create(validEventProps);
     });

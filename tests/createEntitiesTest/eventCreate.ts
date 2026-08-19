@@ -1,7 +1,7 @@
 import { Event, EventCreateProps } from '@/../src/domain/entities/Event/Event';
 import { testUserId } from '@/../tests/createEntitiesTest/userCreate';
 
-export const validEventProp = {
+export const eventTestCreateProps = {
     id: 'event-id',
     name: 'Test Event',
     outfitIds: ['outfit-id-1', 'outfit-id-2'],
@@ -13,5 +13,5 @@ export const validEventProp = {
 };
 
 export function createTestEvent(overrideProps: Partial<EventCreateProps> = {}) {
-    return Event.create({ ...validEventProp, ...overrideProps });
+    return Event.create({ ...eventTestCreateProps, ...overrideProps });
 }

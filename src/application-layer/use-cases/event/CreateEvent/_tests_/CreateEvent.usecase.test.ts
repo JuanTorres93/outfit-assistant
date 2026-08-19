@@ -3,7 +3,7 @@ import { CreateEventUseCase } from '../CreateEvent.usecase';
 import { AlreadyExistsDomainError } from '@/domain/common/domainErrors';
 import { MemoryEventRepo } from '@/infra/repos/Memory/MemoryEventRepo';
 import { CryptoUUIDIdGenerator } from '@/infra/services/CryptoUUIDIdGenerator/CryptoUUIDIdGenerator';
-import { validEventProp } from 'tests/createEntitiesTest/eventCreate';
+import { eventTestCreateProps } from 'tests/createEntitiesTest/eventCreate';
 import { Event } from '@/domain/entities/Event/Event';
 
 describe('CreateEventUseCase', () => {
