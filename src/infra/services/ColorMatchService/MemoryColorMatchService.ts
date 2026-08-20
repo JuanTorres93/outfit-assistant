@@ -16,6 +16,13 @@ const MAX_SCORE = 100;
 
 const MAX_CATEGORIES = 50;
 
+const MAX_OUTFIT_COLORS = 4;
+const MIN_NEUTRAL_COLORS_AT_MAX = 2;
+
+function normalizeColorName(colorName: string): string {
+  return colorName.trim().toLowerCase();
+}
+
 function hueDistance(hueA: number, hueB: number): number {
   const diff = Math.abs(hueA - hueB) % 360;
 
@@ -43,7 +50,7 @@ function colorPairScore(colorA: ColorInfo, colorB: ColorInfo): number {
 }
 
 export class MemoryColorMatchService implements ColorMatchService {
-  matchScore(garmentA: Garment, garmentB: Garment): number {
+  private matchScore(garmentA: Garment, garmentB: Garment): number {
     const colorsA = garmentA.colors.map(getColorInfo);
     const colorsB = garmentB.colors.map(getColorInfo);
 
@@ -75,5 +82,21 @@ export class MemoryColorMatchService implements ColorMatchService {
     }
 
     return grouped;
+  }
+
+  isValidColorCombination(garments: Garment[]): boolean {
+    const distinctColorNames = [
+      ...new Set(garments.flatMap((garment) => garment.colors.map(normalizeColorName))),
+    ];
+
+    if (distinctColorNames.length > MAX_OUTFIT_COLORS) return false;
+
+    if (distinctColorNames.length === MAX_OUTFIT_COLORS) {
+      const neutralCount = distinctColorNames.filter((colorName) => getColorInfo(colorName).isNeutral).length;
+
+      return neutralCount >= MIN_NEUTRAL_COLORS_AT_MAX;
+    }
+
+    return true;
   }
 }

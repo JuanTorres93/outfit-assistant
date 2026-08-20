@@ -11,26 +11,34 @@ describe('MemoryColorMatchService', () => {
     colorMatchService = new MemoryColorMatchService();
   });
 
+  // matchScore is an internal implementation detail (not part of the ColorMatchService
+  // interface), so it's exercised here via bracket-notation access rather than a public call.
+  const matchScore = (garmentA: ReturnType<typeof createTestGarment>, garmentB: ReturnType<typeof createTestGarment>) =>
+    (colorMatchService as unknown as { matchScore(a: typeof garmentA, b: typeof garmentB): number })['matchScore'](
+      garmentA,
+      garmentB,
+    );
+
   describe('matchScore', () => {
     it('should score a neutral pairing highly regardless of the other color', () => {
       const whiteShirt = createTestGarment({ id: 'garment-1', colors: ['White'] });
       const redPants = createTestGarment({ id: 'garment-2', colors: ['Red'] });
 
-      expect(colorMatchService.matchScore(whiteShirt, redPants)).toBe(90);
+      expect(matchScore(whiteShirt, redPants)).toBe(90);
     });
 
     it('should score two neutrals highly', () => {
       const whiteShirt = createTestGarment({ id: 'garment-1', colors: ['White'] });
       const blackPants = createTestGarment({ id: 'garment-2', colors: ['Black'] });
 
-      expect(colorMatchService.matchScore(whiteShirt, blackPants)).toBe(90);
+      expect(matchScore(whiteShirt, blackPants)).toBe(90);
     });
 
     it('should score complementary colors highly', () => {
       const orangeShirt = createTestGarment({ id: 'garment-1', colors: ['Orange'] });
       const blueJacket = createTestGarment({ id: 'garment-2', colors: ['Blue'] });
 
-      const score = colorMatchService.matchScore(orangeShirt, blueJacket);
+      const score = matchScore(orangeShirt, blueJacket);
 
       expect(score).toBeGreaterThanOrEqual(85);
     });
@@ -39,7 +47,7 @@ describe('MemoryColorMatchService', () => {
       const redShirt = createTestGarment({ id: 'garment-1', colors: ['Red'] });
       const orangePants = createTestGarment({ id: 'garment-2', colors: ['Orange'] });
 
-      const score = colorMatchService.matchScore(redShirt, orangePants);
+      const score = matchScore(redShirt, orangePants);
 
       expect(score).toBeGreaterThanOrEqual(80);
       expect(score).toBeLessThan(85);
@@ -49,42 +57,65 @@ describe('MemoryColorMatchService', () => {
       const redShirt = createTestGarment({ id: 'garment-1', colors: ['Red'] });
       const greenPants = createTestGarment({ id: 'garment-2', colors: ['Green'] });
 
-      const score = colorMatchService.matchScore(redShirt, greenPants);
+      const score = matchScore(redShirt, greenPants);
 
       expect(score).toBeLessThan(60);
-    });
-
-    it('should never return a score above 100', () => {
-      const whiteShirt = createTestGarment({ id: 'garment-1', colors: ['White'] });
-      const blackPants = createTestGarment({ id: 'garment-2', colors: ['Black'] });
-
-      expect(colorMatchService.matchScore(whiteShirt, blackPants)).toBeLessThanOrEqual(100);
     });
 
     it('should treat unrecognized color names as neutral', () => {
       const mysteryShirt = createTestGarment({ id: 'garment-1', colors: ['Chartreuse Mist'] });
       const redPants = createTestGarment({ id: 'garment-2', colors: ['Red'] });
 
-      expect(colorMatchService.matchScore(mysteryShirt, redPants)).toBe(90);
+      expect(matchScore(mysteryShirt, redPants)).toBe(90);
     });
 
     it('should use the best-matching pair when garments have multiple colors', () => {
       const stripedShirt = createTestGarment({ id: 'garment-1', colors: ['Green', 'White'] });
       const redPants = createTestGarment({ id: 'garment-2', colors: ['Red'] });
 
-      expect(colorMatchService.matchScore(stripedShirt, redPants)).toBe(90);
+      expect(matchScore(stripedShirt, redPants)).toBe(90);
+    });
+
+    describe('score clamping', () => {
+      it('should never exceed 100 for a neutral pairing', () => {
+        const whiteShirt = createTestGarment({ id: 'garment-1', colors: ['White'] });
+        const blackPants = createTestGarment({ id: 'garment-2', colors: ['Black'] });
+
+        expect(matchScore(whiteShirt, blackPants)).toBeLessThanOrEqual(100);
+      });
+
+      it('should never exceed 100 for the highest-scoring complementary pairing', () => {
+        const maroonShirt = createTestGarment({ id: 'garment-1', colors: ['Maroon'] });
+        const turquoiseJacket = createTestGarment({ id: 'garment-2', colors: ['Turquoise'] });
+
+        expect(matchScore(maroonShirt, turquoiseJacket)).toBeLessThanOrEqual(100);
+      });
+
+      it('should never exceed 100 for the highest-scoring analogous pairing', () => {
+        const pinkShirt = createTestGarment({ id: 'garment-1', colors: ['Pink'] });
+        const redPants = createTestGarment({ id: 'garment-2', colors: ['Red'] });
+
+        expect(matchScore(pinkShirt, redPants)).toBeLessThanOrEqual(100);
+      });
+
+      it('should never exceed 100 for the highest-scoring clashing pairing', () => {
+        const greenShirt = createTestGarment({ id: 'garment-1', colors: ['Green'] });
+        const pinkPants = createTestGarment({ id: 'garment-2', colors: ['Pink'] });
+
+        expect(matchScore(greenShirt, pinkPants)).toBeLessThanOrEqual(100);
+      });
     });
   });
 
   describe('getMatchingGarments', () => {
-    it('should return only candidates whose colors match the target', () => {
-      const whiteShirt = createTestGarment({ id: 'garment-1', colors: ['White'] });
-      const bluePants = createTestGarment({ id: 'garment-2', colors: ['Blue'] });
+    it('should return only candidates whose colors match the target, excluding non-matching colors', () => {
+      const redShirt = createTestGarment({ id: 'garment-1', colors: ['Red'] });
+      const orangePants = createTestGarment({ id: 'garment-2', colors: ['Orange'] });
       const greenPants = createTestGarment({ id: 'garment-3', colors: ['Green'] });
 
-      const result = colorMatchService.getMatchingGarments(whiteShirt, [bluePants, greenPants]);
+      const result = colorMatchService.getMatchingGarments(redShirt, [orangePants, greenPants]);
 
-      expect(result.map((garment) => garment.id)).toEqual([bluePants.id, greenPants.id]);
+      expect(result.map((garment) => garment.id)).toEqual([orangePants.id]);
     });
 
     it('should exclude clashing candidates', () => {
@@ -109,8 +140,8 @@ describe('MemoryColorMatchService', () => {
       const redShirt = createTestGarment({ id: 'garment-2', colors: ['Red'] });
       const blueJacket = createTestGarment({ id: 'garment-3', colors: ['Blue'] });
 
-      const redScore = colorMatchService.matchScore(orangePants, redShirt);
-      const blueScore = colorMatchService.matchScore(orangePants, blueJacket);
+      const redScore = matchScore(orangePants, redShirt);
+      const blueScore = matchScore(orangePants, blueJacket);
       expect(blueScore).toBeGreaterThan(redScore);
 
       const result = colorMatchService.getMatchingGarments(orangePants, [redShirt, blueJacket]);
@@ -204,6 +235,77 @@ describe('MemoryColorMatchService', () => {
       expect(Object.keys(result)).toHaveLength(50);
       expect(result['category-0']).toHaveLength(2);
       expect(result['category-overflow']).toBeUndefined();
+    });
+  });
+
+  describe('isValidColorCombination', () => {
+    it('should allow 3 or fewer distinct colors with no neutrals at all', () => {
+      const garments = [
+        createTestGarment({ id: 'garment-1', colors: ['Red'] }),
+        createTestGarment({ id: 'garment-2', colors: ['Blue'] }),
+        createTestGarment({ id: 'garment-3', colors: ['Green'] }),
+      ];
+
+      expect(colorMatchService.isValidColorCombination(garments)).toBe(true);
+    });
+
+    it('should allow exactly 4 distinct colors when at least 2 are neutral', () => {
+      const garments = [
+        createTestGarment({ id: 'garment-1', colors: ['White'] }),
+        createTestGarment({ id: 'garment-2', colors: ['Black'] }),
+        createTestGarment({ id: 'garment-3', colors: ['Red'] }),
+        createTestGarment({ id: 'garment-4', colors: ['Blue'] }),
+      ];
+
+      expect(colorMatchService.isValidColorCombination(garments)).toBe(true);
+    });
+
+    it('should reject 4 distinct colors when fewer than 2 are neutral', () => {
+      const garments = [
+        createTestGarment({ id: 'garment-1', colors: ['White'] }),
+        createTestGarment({ id: 'garment-2', colors: ['Red'] }),
+        createTestGarment({ id: 'garment-3', colors: ['Blue'] }),
+        createTestGarment({ id: 'garment-4', colors: ['Green'] }),
+      ];
+
+      expect(colorMatchService.isValidColorCombination(garments)).toBe(false);
+    });
+
+    it('should reject 4 distinct colors with no neutrals at all', () => {
+      const garments = [
+        createTestGarment({ id: 'garment-1', colors: ['Red'] }),
+        createTestGarment({ id: 'garment-2', colors: ['Blue'] }),
+        createTestGarment({ id: 'garment-3', colors: ['Green'] }),
+        createTestGarment({ id: 'garment-4', colors: ['Yellow'] }),
+      ];
+
+      expect(colorMatchService.isValidColorCombination(garments)).toBe(false);
+    });
+
+    it('should reject more than 4 distinct colors regardless of how many are neutral', () => {
+      const garments = [
+        createTestGarment({ id: 'garment-1', colors: ['White'] }),
+        createTestGarment({ id: 'garment-2', colors: ['Black'] }),
+        createTestGarment({ id: 'garment-3', colors: ['Gray'] }),
+        createTestGarment({ id: 'garment-4', colors: ['Red'] }),
+        createTestGarment({ id: 'garment-5', colors: ['Blue'] }),
+      ];
+
+      expect(colorMatchService.isValidColorCombination(garments)).toBe(false);
+    });
+
+    it('should not double-count the same color name in different casings', () => {
+      const garments = [
+        createTestGarment({ id: 'garment-1', colors: ['White'] }),
+        createTestGarment({ id: 'garment-2', colors: ['white'] }),
+        createTestGarment({ id: 'garment-3', colors: [' WHITE '] }),
+      ];
+
+      expect(colorMatchService.isValidColorCombination(garments)).toBe(true);
+    });
+
+    it('should allow an empty list of garments', () => {
+      expect(colorMatchService.isValidColorCombination([])).toBe(true);
     });
   });
 });
