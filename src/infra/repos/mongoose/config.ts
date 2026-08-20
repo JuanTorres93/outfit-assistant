@@ -1,6 +1,7 @@
-import mongoose, { Model } from 'mongoose';
+import mongoose from 'mongoose';
 
 // TODO IMPORTANT: import Mongo models
+import './models/UserMongo';
 
 // Prevent multiple connections in development on hot reload
 // Use global so the promise persists across recompilations
@@ -26,8 +27,9 @@ export async function startMongooseConnection(uri: string) {
 }
 
 export async function initMongoModels() {
-  const models: Model<any>[] = [
-    // TODO IMPORTANT: add Mongo models here
+  const models = [
+    mongoose.model('User'),
+    // TODO IMPORTANT: import Mongo models
   ];
 
   for (const model of models) {
