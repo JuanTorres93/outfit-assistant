@@ -1,7 +1,7 @@
+import { UserDTO, toUserDTO } from '@/application-layer/dtos/UserDTO';
 import { PasswordHasher } from '@/application-layer/services/PasswordHasher.port';
 import { ResetPasswordTokenService } from '@/application-layer/services/ResetPasswordTokenService.port';
 import { NotFoundDomainError } from '@/domain/common/domainErrors';
-import { User } from '@/domain/entities/User/User';
 import { UsersRepo } from '@/domain/repos/UsersRepo.port';
 import { Password } from '@/domain/value-objects/Password/Password';
 
@@ -17,7 +17,7 @@ export class ResetPasswordUsecase {
     private passwordHasher: PasswordHasher,
   ) {}
 
-  async execute(request: ResetPasswordUsecaseRequest): Promise<User> {
+  async execute(request: ResetPasswordUsecaseRequest): Promise<UserDTO> {
     const hashedResetToken = await this.tokenEncryptor.encryptToken(request.plainResetToken);
 
     const user = await this.usersRepo.getByPasswordResetToken(hashedResetToken);
@@ -42,7 +42,6 @@ export class ResetPasswordUsecase {
 
     await this.usersRepo.save(user);
 
-    // TODO IMPORTANT: return DTO when implemented
-    return user;
+    return toUserDTO(user);
   }
 }

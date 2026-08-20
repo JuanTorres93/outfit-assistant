@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { createTestUser } from '@/../tests/createEntitiesTest/userCreate';
+import { userDTOProperties } from '@/../tests/dtoProperties/userDtoProperties';
 import { NotFoundDomainError, ValidationDomainError } from '@/domain/common/domainErrors';
 import { User } from '@/domain/entities/User/User';
 import { MemoryUsersRepo } from '@/infra/repos/Memory/MemoryUsersRepo';
@@ -37,20 +38,20 @@ describe('ResetPasswordUsecase', () => {
   });
 
   describe('Execution', () => {
-    //it("should return UserDTO", async () => {
-    //  const request = {
-    //    plainResetToken: resetToken,
-    //    newPlainPassword: newStrongPassword,
-    //  };
+    it('should return UserDTO', async () => {
+      const request = {
+        plainResetToken: resetToken,
+        newPlainPassword: newStrongPassword,
+      };
 
-    //  const updatedUser = await usecase.execute(request);
+      const updatedUser = await usecase.execute(request);
 
-    //  expect(updatedUser).not.toBeInstanceOf(User);
+      expect(updatedUser).not.toBeInstanceOf(User);
 
-    //  for (const prop of userDTOProperties) {
-    //    expect(updatedUser).toHaveProperty(prop);
-    //  }
-    //});
+      for (const prop of userDTOProperties) {
+        expect(updatedUser).toHaveProperty(prop);
+      }
+    });
 
     it('user should not be found by plain token but by its encrypted version', async () => {
       user.forgotPassword(encryptedResetToken);
