@@ -4,30 +4,25 @@ import { Event } from '@/domain/entities/Event/Event';
 
 export class MemoryOutfitSuggestionByEventService implements OutfitSuggestionByEventService {
     
-    async suggestOufitForEvent(garments: Garment[], event: Event ): Promise<Garment[]> {
+    async suggestOutfitForEvent(garments: Garment[], event: Event ): Promise<Garment[]> {
         
 
         if(event.date !== undefined)
         {
             const filteredGarments = this.filterGarmentsByDate(garments, event.date);
+            garments = filteredGarments;
         }
 
         const categories = this.DefineCategories(event.location);
 
-        const garmentByCategories: Garment[] = [];
-        const shirts = this.filterGarmentsByCategory(garments, 'shirt');
-        const pants = this.filterGarmentsByCategory(garments, 'pants');
-        const shoes = this.filterGarmentsByCategory(garments, 'shoes');
+        const garmentByCategories: Garment[][] = categories.map((category) =>
+            this.filterGarmentsByCategory(garments, category),
+        );
 
-        const choosenShirt = shirts[Math.floor(Math.random() * shirts.length)];
-        const choosenPants = pants[Math.floor(Math.random() * pants.length)];
-        const choosenShoes = shoes[Math.floor(Math.random() * shoes.length)];
+        const choosenGarments: Garment[] = garmentByCategories.map((category) =>
+        category[Math.floor(Math.random() * category.length)]);
 
-        const newOutfit: Garment[] = [];
-        if (choosenShirt) newOutfit.push(choosenShirt);
-        if (choosenPants) newOutfit.push(choosenPants);
-        if (choosenShoes) newOutfit.push(choosenShoes);
-        return newOutfit;
+        return choosenGarments;
     }
 
     private filterGarmentsByCategory(garments: Garment[], category: string): Garment[] {
@@ -35,8 +30,6 @@ export class MemoryOutfitSuggestionByEventService implements OutfitSuggestionByE
     }
 
     private filterGarmentsByDate(garments: Garment[], date: Date): Garment[] {
-        const seasonTypes = ['spring', 'summer', 'autumn', 'winter'];
-
         const eventMonth = date.getMonth() + 1;
         let eventSeason: string;
 

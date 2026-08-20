@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { GetEventsByUserIdUseCase } from '../GetEventsByUserId.usecase';
 import { NotFoundDomainError } from '@/domain/common/domainErrors';
 import { MemoryEventRepo } from '@/infra/repos/Memory/MemoryEventRepo';
-import { createTestEvent } from 'tests/createEntitiesTest/eventCreate';
+import { createTestEvent } from '@/../tests/createEntitiesTest/eventCreate';
 
 describe('GetEventsByUserIdUseCase', () => {
     let getEventsByUserIdUseCase: GetEventsByUserIdUseCase;

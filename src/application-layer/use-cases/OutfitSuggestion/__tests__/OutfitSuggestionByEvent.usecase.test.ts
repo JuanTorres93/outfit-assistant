@@ -3,34 +3,38 @@ import { NotFoundDomainError } from '@/domain/common/domainErrors';
 import { OutfitSuggestionByEventUseCase } from '../OutfitSuggestionByEvent.usecase';
 import { EventsRepo } from '@/domain/repos/EventsRepo.port';
 import { GarmentsRepo } from '@/domain/repos/GarmentsRepo.port';
-import { OutfitsRepo } from '@/domain/repos/OutfitsRepo.port';
+import { UsersRepo } from '@/domain/repos/UsersRepo.port';
 import { ClosetsRepo } from '@/domain/repos/ClosetsRepo.port';
-import { MemoryOutfitsRepo } from '@/infra/repos/Memory/MemoryOutfitsRepo';
 import { MemoryEventRepo } from '@/infra/repos/Memory/MemoryEventRepo';
 import { MemoryGarmentRepo } from '@/infra/repos/Memory/MemoryGarmentRepo';
 import { MemoryClosetsRepo } from '@/infra/repos/Memory/MemoryClosetsRepo';
-import { createTestEvent } from 'tests/createEntitiesTest/eventCreate';
+import { MemoryUsersRepo } from '@/infra/repos/Memory/MemoryUsersRepo';
+import { createTestEvent } from '@/../tests/createEntitiesTest/eventCreate';
 import { MemoryOutfitSuggestionByEventService } from '@/infra/services/OutfitSuggestionByEvent/MemoryOutfitSuggestionByEvent';
 import { OutfitSuggestionByEventService } from '@/application-layer/services/OutfitSuggestionByEventService';
-import { createTestUser, userTestCreateProps } from 'tests/createEntitiesTest/userCreate';
+import { createTestUser } from '@/../tests/createEntitiesTest/userCreate';
+import { CryptoUUIDIdGenerator } from '@/infra/services/CryptoUUIDIdGenerator/CryptoUUIDIdGenerator';
+import { createTestCloset } from '@/../tests/createEntitiesTest/closetCreate';
 
 describe('OutfitSuggestionUseCase', () => {
   let outfitSuggestionByEventUseCase: OutfitSuggestionByEventUseCase;
   let outfitSuggestionByEventService: OutfitSuggestionByEventService;
 
   
-  let outfitsRepo: OutfitsRepo;
   let eventsRepo: EventsRepo;
   let garmentsRepo: GarmentsRepo;
   let closetsRepo: ClosetsRepo;
+  let usersRepo: UsersRepo;
+  let idGenerator: CryptoUUIDIdGenerator;
 
   beforeEach(() => {
-    outfitsRepo = new MemoryOutfitsRepo();
     eventsRepo = new MemoryEventRepo();
     garmentsRepo = new MemoryGarmentRepo();
     closetsRepo = new MemoryClosetsRepo();
+    usersRepo = new MemoryUsersRepo();
+    idGenerator = new CryptoUUIDIdGenerator();
     outfitSuggestionByEventService = new MemoryOutfitSuggestionByEventService();
-    outfitSuggestionByEventUseCase = new OutfitSuggestionByEventUseCase(outfitsRepo, eventsRepo, garmentsRepo, closetsRepo, outfitSuggestionByEventService);
+    outfitSuggestionByEventUseCase = new OutfitSuggestionByEventUseCase(eventsRepo, garmentsRepo, closetsRepo, outfitSuggestionByEventService, idGenerator);
   });
 
     describe('Execute', () => {
@@ -38,6 +42,10 @@ describe('OutfitSuggestionUseCase', () => {
             const event = createTestEvent();
             await eventsRepo.save(event);
             const user = createTestUser();
+            await usersRepo.save(user);
+
+            const closet = createTestCloset();
+            await closetsRepo.save(closet);
 
             const result = await outfitSuggestionByEventUseCase.execute({
                 eventId: event.id,

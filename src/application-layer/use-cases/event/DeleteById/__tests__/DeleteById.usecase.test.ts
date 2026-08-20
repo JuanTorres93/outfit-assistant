@@ -2,26 +2,29 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { DeleteEventByIdUseCase } from '../DeleteById.usecase';
 import { NotFoundDomainError } from '@/domain/common/domainErrors';
 import { MemoryEventRepo } from '@/infra/repos/Memory/MemoryEventRepo';
-import { createTestEvent } from 'tests/createEntitiesTest/eventCreate';
+import { createTestEvent } from '@/../tests/createEntitiesTest/eventCreate';
+import { Event } from '@/domain/entities/Event/Event';
+import { eventTestCreateProps } from '@/../tests/createEntitiesTest/eventCreate';
 
 describe('DeleteEventByIdUseCase', () => {
     let deleteEventByIdUseCase: DeleteEventByIdUseCase;
     let eventRepo: MemoryEventRepo;
+    let event: Event;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         eventRepo = new MemoryEventRepo();
         deleteEventByIdUseCase = new DeleteEventByIdUseCase(eventRepo);
+        event = Event.create({...eventTestCreateProps, });
+        await eventRepo.save(event);
+        
     });
 
     describe('Execute', () => {
         it('should delete an event when found', async () => {
-            const event = createTestEvent();
-            await eventRepo.save(event);
-
             await deleteEventByIdUseCase.execute({ eventId: event.id });
 
             const deletedEvent = await eventRepo.getById(event.id);
-            expect(deletedEvent).toBeUndefined();
+            expect(deletedEvent).toBeNull();
         });
     });
 
@@ -30,8 +33,8 @@ describe('DeleteEventByIdUseCase', () => {
             const eventsBefore = await eventRepo.getAll();
             expect(eventsBefore.length).toBe(1);
 
-            const newEvent = await deleteEventByIdUseCase.execute({
-                eventId: 'event-123',
+            await deleteEventByIdUseCase.execute({
+                eventId: 'event-id',
             });
             const eventsAfter = await eventRepo.getAll();
             expect(eventsAfter.length).toBe(0);

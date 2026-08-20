@@ -1,13 +1,11 @@
-import { OutfitsRepo } from '@/domain/repos/OutfitsRepo.port';
 import { Outfit } from '@/domain/entities/Outfit/Outfit';
 import { EventsRepo } from '@/domain/repos/EventsRepo.port';
-import { Event } from '@/domain/entities/Event/Event';
 import { GarmentsRepo } from '@/domain/repos/GarmentsRepo.port';
 import { OutfitSuggestionByEventService } from '@/application-layer/services/OutfitSuggestionByEventService';
 import { Garment } from '@/domain/entities/Garment/Garment';
 import { ClosetsRepo } from '@/domain/repos/ClosetsRepo.port';
 import { NotFoundDomainError } from '@/domain/common/domainErrors';
-import { CreateOutfitUsecase } from '../outfit/CreateOutfit/CreateOutfit.usecase';
+import { CryptoUUIDIdGenerator } from '@/infra/services/CryptoUUIDIdGenerator/CryptoUUIDIdGenerator';
 
 export type OutfitSuggestionByEventUseCaseRequest = {  
   eventId: string;
@@ -16,12 +14,11 @@ export type OutfitSuggestionByEventUseCaseRequest = {
 
 export class OutfitSuggestionByEventUseCase {
   constructor(
-    private outfitsRepo: OutfitsRepo, 
     private eventsRepo: EventsRepo,
     private garmentsRepo: GarmentsRepo,
     private closetsRepo: ClosetsRepo,
     private outfitSuggestionByEventService: OutfitSuggestionByEventService,
-    private createOutfitUseCase: CreateOutfitUsecase,
+    private idGenerator: CryptoUUIDIdGenerator,
     ) {}
 
     async execute(request: OutfitSuggestionByEventUseCaseRequest): Promise<Outfit> {
@@ -30,15 +27,17 @@ export class OutfitSuggestionByEventUseCase {
 
       const userCloset = await this.closetsRepo.getByUserId(request.userId);
 
-      const userGarments: Garment[] = [];
+      const hydratedGarments = await Promise.all(
+        (userCloset?.garmentIds || []).map((garmentId) => this.garmentsRepo.getById(garmentId)),
+      );
+      const userGarments = hydratedGarments.filter((garment): garment is Garment => garment !== null);
 
-      for(const garmentId of userCloset?.garmentIds || []) {
-        const garment = await this.garmentsRepo.getById(garmentId);
-        userGarments.push(garment as Garment);
+      if (userCloset === null) {
+        throw new NotFoundDomainError('User has no closet.');
       }
-
-      if (userGarments === undefined || userGarments.length === 0) {
-        throw new NotFoundDomainError('User has no garments.');
+      
+      if (userGarments.length === 0) {
+        throw new NotFoundDomainError('User has no garments in their closet.');
       }
       else
       {
@@ -46,23 +45,16 @@ export class OutfitSuggestionByEventUseCase {
         {
           throw new NotFoundDomainError('Event not found.');
         }
-        else
-        {
-          const filteredGarments = await this.outfitSuggestionByEventService.suggestOufitForEvent(userGarments, event);
+        
+        const filteredGarments = await this.outfitSuggestionByEventService.suggestOutfitForEvent(userGarments, event);
 
-          const garmentIds: string[] = [];
+        const garmentIds = filteredGarments.map((garment) => garment.id);
 
-          for(let i = 0; i <= filteredGarments.length; i++)
-          {
-            garmentIds.push(filteredGarments[i].id);
-          } 
-
-          return this.createOutfitUseCase.execute({
-            userId: request.userId, 
-            name: 'Suggested Outfit for Event', 
-            garmentIds: garmentIds
-          });
-        } 
+        
+        return Outfit.create({ id: this.idGenerator.generateId(),
+          userId: request.userId, 
+          name: 'Suggested Outfit for Event', 
+          garmentIds: garmentIds});
       }
       
     }

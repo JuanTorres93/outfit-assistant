@@ -28,15 +28,15 @@ describe('MemoryOutfitSuggestionByEventService', () => {
 
 
     describe('suggestOufitForEvent', () => {
-        it('should return a bundle of garments', () => {
+        it('should return a bundle of garments', async () => {
             const garments: Garment[] = [];
             garments.push(garment);
-            const outfit = service.suggestOufitForEvent(garments, validEventProps as any);
+            const outfit = await service.suggestOutfitForEvent(garments, validEventProps as Event);
             expect(outfit).toBeTypeOf('object');
         });
-        it('should return an empty array if bundle of garments is empty', () => {
+        it('should return an empty array if bundle of garments is empty', async () => {
             const garments: Garment[] = [];
-            const outfit = service.suggestOufitForEvent(garments, validEventProps as any);
+            const outfit = await service.suggestOutfitForEvent(garments, validEventProps as Event);
             expect(outfit).toEqual([]);
         });
     });
