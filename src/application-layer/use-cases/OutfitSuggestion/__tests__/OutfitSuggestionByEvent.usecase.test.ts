@@ -15,6 +15,7 @@ import { OutfitSuggestionByEventService } from '@/application-layer/services/Out
 import { createTestUser } from '@/../tests/createEntitiesTest/userCreate';
 import { CryptoUUIDIdGenerator } from '@/infra/services/CryptoUUIDIdGenerator/CryptoUUIDIdGenerator';
 import { createTestCloset } from '@/../tests/createEntitiesTest/closetCreate';
+import { createTestGarment } from '@/../tests/createEntitiesTest/garmentCreate';
 
 describe('OutfitSuggestionUseCase', () => {
   let outfitSuggestionByEventUseCase: OutfitSuggestionByEventUseCase;
@@ -43,8 +44,13 @@ describe('OutfitSuggestionUseCase', () => {
             await eventsRepo.save(event);
             const user = createTestUser();
             await usersRepo.save(user);
+            const garment1 = createTestGarment({id: 'garment-id-1'});
+            await garmentsRepo.save(garment1);
+            const garment2 = createTestGarment({id: 'garment-id-2'});
+            await garmentsRepo.save(garment2);
+            
 
-            const closet = createTestCloset();
+            const closet = createTestCloset( {garmentIds: [garment1.id, garment2.id] });
             await closetsRepo.save(closet);
 
             const result = await outfitSuggestionByEventUseCase.execute({

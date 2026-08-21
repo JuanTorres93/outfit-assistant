@@ -3,21 +3,28 @@ import { GetEventsByUserIdUseCase } from '../GetEventsByUserId.usecase';
 import { NotFoundDomainError } from '@/domain/common/domainErrors';
 import { MemoryEventRepo } from '@/infra/repos/Memory/MemoryEventRepo';
 import { createTestEvent } from '@/../tests/createEntitiesTest/eventCreate';
+import { createTestUser } from '@/../tests/createEntitiesTest/userCreate';
+import { MemoryUsersRepo } from '@/infra/repos/Memory/MemoryUsersRepo';
 
 describe('GetEventsByUserIdUseCase', () => {
     let getEventsByUserIdUseCase: GetEventsByUserIdUseCase;
     let EventRepo: MemoryEventRepo;
+    let UserRepo: MemoryUsersRepo;
 
     beforeEach(() => {
         EventRepo = new MemoryEventRepo();
+        UserRepo = new MemoryUsersRepo();
         getEventsByUserIdUseCase = new GetEventsByUserIdUseCase(EventRepo);
     });
 
     describe('Execute', () => {
         it('should return events when found', async () => {
-            const event1 = createTestEvent();
-            const event2 = createTestEvent();
-            
+            const user = createTestUser();
+            await UserRepo.save(user);
+
+            const event1 = createTestEvent({id: 'event-id-1', userId: user.id});
+            const event2 = createTestEvent({id: 'event-id-2', userId: user.id});
+
             await EventRepo.save(event1);
             await EventRepo.save(event2);
 
