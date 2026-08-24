@@ -3,7 +3,6 @@ import { beforeEach, describe, it, expect } from 'vitest';
 import { createTestEvent } from "@/../tests/createEntitiesTest/eventCreate";
 
 import { Event } from '@/domain/entities/Event/Event';
-import { vitest } from "vitest";
 
 import { MemoryEventRepo } from '../Memory/MemoryEventRepo';
 

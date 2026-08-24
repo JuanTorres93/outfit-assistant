@@ -4,7 +4,6 @@ import { testUserId } from '@/../tests/createEntitiesTest/userCreate';
 export const eventTestCreateProps = {
     id: 'event-id',
     name: 'Test Event',
-    outfitIds: ['outfit-id-1', 'outfit-id-2'],
     location: 'Test Location',
     date: new Date(),
     userId: testUserId,

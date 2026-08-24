@@ -1,6 +1,6 @@
 import { NotFoundDomainError } from '@/domain/common/domainErrors';
-import { Event } from '@/domain/entities/Event/Event';
 import { EventsRepo } from '@/domain/repos/EventsRepo.port';
+import { EventDTO, toEventDTO } from '@/application-layer/dtos/EventDTO';
 
 export type GetEventsByUserIdUseCaseRequest = {
     userId: string;
@@ -9,7 +9,7 @@ export type GetEventsByUserIdUseCaseRequest = {
 export class GetEventsByUserIdUseCase {
     constructor(private eventsRepo: EventsRepo) {}
 
-    async execute(request: GetEventsByUserIdUseCaseRequest): Promise<Event[]> {
+    async execute(request: GetEventsByUserIdUseCaseRequest): Promise<EventDTO[]> {
         if (!request.userId) {
             throw new NotFoundDomainError('User ID is required to get events.');
         }
@@ -19,6 +19,13 @@ export class GetEventsByUserIdUseCase {
             throw new NotFoundDomainError(`Events from user with Id ${request.userId} not found.`);
         }
 
-        return events;
+        const eventDTOs: EventDTO[] = [];
+
+        for(let i = 0; i < events.length; i++)
+        {
+            eventDTOs.push(toEventDTO(events[i]));
+        }
+
+        return eventDTOs;
     }
 }

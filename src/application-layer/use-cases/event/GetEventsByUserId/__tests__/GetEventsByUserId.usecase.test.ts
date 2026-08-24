@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { GetEventsByUserIdUseCase } from '../GetEventsByUserId.usecase';
 import { NotFoundDomainError } from '@/domain/common/domainErrors';
+import { eventDTOProperties } from '@/../tests/dtoProperties/eventDTOProperties';
+import { toEventDTO } from '@/application-layer/dtos/EventDTO';
 import { MemoryEventRepo } from '@/infra/repos/Memory/MemoryEventRepo';
 import { createTestEvent } from '@/../tests/createEntitiesTest/eventCreate';
 import { createTestUser } from '@/../tests/createEntitiesTest/userCreate';
@@ -30,8 +32,30 @@ describe('GetEventsByUserIdUseCase', () => {
 
             const result = await getEventsByUserIdUseCase.execute({ userId: event1.userId });
 
-            expect(result).toEqual([event1, event2]);
+            expect(result).toEqual([toEventDTO(event1), toEventDTO(event2)]);
         });
+
+        it('should return event DTOs when found', async () => {
+            const user = createTestUser();
+            await UserRepo.save(user);
+
+            const event1 = createTestEvent({id: 'event-id-1', userId: user.id});
+            const event2 = createTestEvent({id: 'event-id-2', userId: user.id});
+
+            await EventRepo.save(event1);
+            await EventRepo.save(event2);
+
+            const result = await getEventsByUserIdUseCase.execute({ userId: event1.userId });
+
+            for (const prop of eventDTOProperties)
+            {
+                for(let i = 0; i < result.length; i++)
+                {
+                    expect(result[i]).not.toBeInstanceOf(Event);
+                    expect(result[i]).toHaveProperty(prop);
+                }
+            }
+        })
     });
 
     describe('Errors', () => {
