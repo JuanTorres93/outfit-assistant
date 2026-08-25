@@ -7,7 +7,6 @@ import { Text } from '../../value-objects/Text/Text';
 export type EventCreateProps = {
   id: string;
   name: string;
-  outfitIds?: string[];
   location?: string;
   date?: Date;
   userId?: string;
@@ -18,7 +17,6 @@ export type EventCreateProps = {
 export type EventProps = {
   id: Id;
   name: Text;
-  outfitIds: Id[];
   location: Text;
   date: DomainDate;
   userId: Id;
@@ -30,14 +28,9 @@ export class Event {
   private constructor(private readonly props: EventProps) {}
 
   static create(props: EventCreateProps): Event {
-    const outfitIds = (props.outfitIds ?? []).map((outfitId) => Id.create(outfitId));
-
-    assertNoDuplicateOutfitIds(outfitIds);
-
     const EventProps: EventProps = {
       id: Id.create(props.id),
       name: Text.create(props.name),
-      outfitIds: outfitIds,
       location: Text.create(props.location || ''),
       date: DomainDate.create(props.date),
       userId: Id.create(props.userId || ''),
@@ -51,7 +44,6 @@ export class Event {
     return {
       id: this.id,
       name: this.name,
-      outfitIds: this.outfitIds,
       location: this.location,
       date: this.date,
       userId: this.userId,
@@ -63,36 +55,6 @@ export class Event {
   changeName(newName: string): void {
     this.props.name = Text.create(newName);
     this.props.updatedAt = DomainDate.create(new Date());
-  }
-
-  addOutfit(outfitId: string): void {
-    const id = Id.create(outfitId);
-
-        if (this.props.outfitIds.some(existingId => existingId.equals(id)))
-        {
-            throw new AlreadyExistsDomainError(`Event already contains outfit with id ${outfitId}`);
-        }
-
-    this.props.outfitIds.push(id);
-    this.props.updatedAt = DomainDate.create();
-  }
-
-  removeOutfit(outfitId: string): void {
-    const id = Id.create(outfitId);
-    const index = this.props.outfitIds.findIndex((existingId) => existingId.equals(id));
-
-    if (index === -1) {
-      throw new NotFoundDomainError(`Event does not contain outfit with id ${outfitId}`);
-    }
-
-    this.props.outfitIds.splice(index, 1);
-    this.props.updatedAt = DomainDate.create();
-  }
-
-  hasOutfit(outfitId: string): boolean {
-    const id = Id.create(outfitId);
-
-    return this.props.outfitIds.some((existingId) => existingId.equals(id));
   }
 
   updateLocation(newLocation: string): void {
@@ -117,10 +79,6 @@ export class Event {
     return this.props.name.value;
   }
 
-  get outfitIds() {
-    return this.props.outfitIds.map((outfitId) => outfitId.value);
-  }
-
   get location() {
     return this.props.location.value;
   }
@@ -142,15 +100,3 @@ export class Event {
   }
 }
 
-function assertNoDuplicateOutfitIds(outfitIds: Id[]): void {
-  const seen = new Set<string>();
-
-    for (const outfitId of outfitIds) {
-        if(seen.has(outfitId.value)) 
-        {
-            throw new AlreadyExistsDomainError(`Duplicate outfit id ${outfitId.value} in event`);
-        }
-
-    seen.add(outfitId.value);
-  }
-}

@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { CreateEventUseCase } from '../CreateEvent.usecase';
+import { eventDTOProperties } from '@/../tests/dtoProperties/eventDTOProperties';
+import { EventDTO } from '@/application-layer/dtos/EventDTO';
+
 import { AlreadyExistsDomainError } from '@/domain/common/domainErrors';
 import { MemoryEventRepo } from '@/infra/repos/Memory/MemoryEventRepo';
 import { CryptoUUIDIdGenerator } from '@/infra/services/CryptoUUIDIdGenerator/CryptoUUIDIdGenerator';
@@ -11,7 +14,7 @@ describe('CreateEventUseCase', () => {
     let eventRepo: MemoryEventRepo;
     let idGenerator: CryptoUUIDIdGenerator;
 
-    let event: Event;
+    let event: EventDTO;
 
     beforeEach(async () => {
         eventRepo = new MemoryEventRepo();
@@ -21,7 +24,6 @@ describe('CreateEventUseCase', () => {
         event = await createEventUseCase.execute({
             name: eventTestCreateProps.name,
             userId: eventTestCreateProps.userId,
-            outfitIds: eventTestCreateProps.outfitIds,
         });
     });
 
@@ -29,11 +31,18 @@ describe('CreateEventUseCase', () => {
         it('should create event', async () => {
             expect(event.name).toBe(eventTestCreateProps.name);
             expect(event.userId).toBe(eventTestCreateProps.userId);
-            expect(event.outfitIds).toEqual(eventTestCreateProps.outfitIds);
             expect(event.id).toBeDefined();
             expect(event.createdAt).toBeDefined();
             expect(event.updatedAt).toBeDefined();
-        }); 
+        });
+
+        it('should return EventDTO', async () => {
+            expect(event).not.toBeInstanceOf(Event);
+
+            for (const prop of eventDTOProperties) {
+            expect(event).toHaveProperty(prop);
+            }
+        });       
     });
 
     describe('Side Effects', () => {
@@ -44,7 +53,6 @@ describe('CreateEventUseCase', () => {
             const newEvent = await createEventUseCase.execute({
                 name: 'Another Event',
                 userId: 'user-456',
-                outfitIds: ['outfit-3'],
             });
             const eventsAfter = await eventRepo.getAll();
             expect(eventsAfter.length).toBe(2);
