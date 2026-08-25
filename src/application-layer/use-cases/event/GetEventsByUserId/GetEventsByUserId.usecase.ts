@@ -19,13 +19,8 @@ export class GetEventsByUserIdUseCase {
             throw new NotFoundDomainError(`Events from user with Id ${request.userId} not found.`);
         }
 
-        const eventDTOs: EventDTO[] = [];
-
-        for(let i = 0; i < events.length; i++)
-        {
-            eventDTOs.push(toEventDTO(events[i]));
-        }
-
+        const eventDTOs = await Promise.all(events.map(event => toEventDTO(event)));
+        
         return eventDTOs;
     }
 }
