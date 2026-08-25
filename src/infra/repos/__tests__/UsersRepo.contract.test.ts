@@ -1,12 +1,19 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { createTestUser } from '@/../tests/createEntitiesTest/userCreate';
 import { User } from '@/domain/entities/User/User';
 
 import { MemoryUsersRepo } from '../Memory/MemoryUsersRepo';
+import {
+  clearMongoTestDB,
+  setupMongoTestDB,
+  teardownMongoTestDB,
+} from '../mongoose/__tests__/setupMongoTestDB';
+import { MongooseUsersRepo } from '../mongoose/repos/MongooseUsersRepo';
 
 const repos = [
   { name: 'MemoryUsersRepo', repoClass: MemoryUsersRepo },
+  { name: 'MongooseUsersRepo', repoClass: MongooseUsersRepo },
   // Add more repo implementations here as needed
 ];
 
@@ -15,12 +22,22 @@ repos.forEach(({ name, repoClass }) => {
     let repo: InstanceType<typeof repoClass>;
     let user: User;
 
+    beforeAll(async () => {
+      if (name === 'MongooseUsersRepo') await setupMongoTestDB();
+    });
+
     beforeEach(async () => {
+      if (name === 'MongooseUsersRepo') await clearMongoTestDB();
+
       user = createTestUser();
 
       repo = new repoClass();
 
       await repo.save(user);
+    });
+
+    afterAll(async () => {
+      if (name === 'MongooseUsersRepo') await teardownMongoTestDB();
     });
 
     describe('getAll', () => {
@@ -31,6 +48,8 @@ repos.forEach(({ name, repoClass }) => {
       });
 
       it('should return an empty array if no users are saved', async () => {
+        if (name === 'MongooseUsersRepo') await clearMongoTestDB();
+
         const emptyRepo = new repoClass();
 
         const users = await emptyRepo.getAll();
@@ -41,6 +60,8 @@ repos.forEach(({ name, repoClass }) => {
 
     describe('save', () => {
       it('should save a user', async () => {
+        if (name === 'MongooseUsersRepo') await clearMongoTestDB();
+
         const newUser = createTestUser({ id: 'new-user-id' });
 
         const usersBefore = await repo.getAll();
