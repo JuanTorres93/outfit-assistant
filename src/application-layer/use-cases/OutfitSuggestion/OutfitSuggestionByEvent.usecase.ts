@@ -27,15 +27,14 @@ export class OutfitSuggestionByEventUseCase {
 
       const userCloset = await this.closetsRepo.getByUserId(request.userId);
 
-      const hydratedGarments = await Promise.all(
-        (userCloset?.garmentIds || []).map((garmentId) => this.garmentsRepo.getById(garmentId)),
-      );
-      const userGarments = hydratedGarments.filter((garment): garment is Garment => garment !== null);
-
       if (userCloset === null) {
         throw new NotFoundDomainError('User has no closet.');
       }
-      
+
+      const hydratedGarments = await this.garmentsRepo.getMultipleByIds(userCloset.garmentIds);
+
+      const userGarments = hydratedGarments.filter((garment): garment is Garment => garment !== null);
+
       if (userGarments.length === 0) {
         throw new NotFoundDomainError('User has no garments in their closet.');
       }

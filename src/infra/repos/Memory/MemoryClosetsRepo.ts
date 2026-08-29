@@ -20,6 +20,12 @@ export class MemoryClosetsRepo implements ClosetsRepo {
     return closet?.clone() || null;
   }
 
+  async getMultipleByIds(ids: string[]): Promise<(Closet | null)[]> {
+    const selectedClosets = ids.map(id => this.closets.find(closet => closet.id === id))
+  
+    return selectedClosets.map(closet => closet !== undefined ? closet.clone() : null);
+  }
+
   async save(closet: Closet): Promise<void> {
     const existingClosetIndex = this.closets.findIndex((closetInRepo) => closetInRepo.id === closet.id);
 

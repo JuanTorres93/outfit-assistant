@@ -20,8 +20,8 @@ export class GetGarmentsInOutfitUsecase {
 
     if (!outfit) throw new NotFoundDomainError(`Outfit with id ${request.outfitId} not found`);
 
-    const garments = await Promise.all(outfit.garmentIds.map((garmentId) => this.garmentsRepo.getById(garmentId)));
-
+    const garments = await this.garmentsRepo.getMultipleByIds(outfit.garmentIds);
+    
     return garments.filter((garment): garment is Garment => garment !== null);
   }
 }

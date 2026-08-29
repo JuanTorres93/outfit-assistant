@@ -18,6 +18,12 @@ export class MemoryOutfitsRepo implements OutfitsRepo {
     return this.outfits.filter((outfit) => outfit.userId === userId).map((outfit) => outfit.clone());
   }
 
+  async getMultipleByIds(ids: string[]): Promise<(Outfit | null)[]> {
+    const selectedOutfits = ids.map(id => this.outfits.find(outfit => outfit.id === id))
+  
+    return selectedOutfits.map(outfit => outfit !== undefined ? outfit.clone() : null);
+  }
+
   async save(outfit: Outfit): Promise<void> {
     const existingOutfitIndex = this.outfits.findIndex((outfitInRepo) => outfitInRepo.id === outfit.id);
 
