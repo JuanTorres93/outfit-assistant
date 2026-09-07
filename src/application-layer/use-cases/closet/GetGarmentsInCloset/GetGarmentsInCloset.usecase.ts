@@ -21,8 +21,8 @@ export class GetGarmentsInClosetUsecase {
 
     if (!closet) throw new NotFoundDomainError(`Closet with id ${request.closetId} not found`);
 
-    const garments = await Promise.all(closet.garmentIds.map((garmentId) => this.garmentsRepo.getById(garmentId)));
-
+    const garments = await this.garmentsRepo.getMultipleByIds(closet.garmentIds);
+    
     return garments.filter((garment): garment is Garment => garment !== null);
   }
 }

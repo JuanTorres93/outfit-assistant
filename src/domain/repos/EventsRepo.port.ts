@@ -5,6 +5,8 @@ export interface EventsRepo {
     getById(id: string): Promise<Event | null>;
     getByUserId(userId: string): Promise<Event[] | null>;
 
+    getMultipleByIds(id: string[]): Promise<(Event | null)[]>;
+
     save(event: Event): Promise<void>;
 
     deleteById(id: string): Promise<void>;

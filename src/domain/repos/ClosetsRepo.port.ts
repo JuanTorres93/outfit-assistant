@@ -5,6 +5,8 @@ export interface ClosetsRepo {
   getById(id: string): Promise<Closet | null>;
   getByUserId(userId: string): Promise<Closet | null>;
 
+  getMultipleByIds(id: string[]): Promise<(Closet | null)[]>;
+
   save(closet: Closet): Promise<void>;
 
   deleteById(id: string): Promise<void>;

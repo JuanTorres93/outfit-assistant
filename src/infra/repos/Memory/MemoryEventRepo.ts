@@ -19,6 +19,12 @@ export class MemoryEventRepo implements EventsRepo {
         return events.length > 0 ? events.map(event => event.clone()) : null;
     }
 
+    async getMultipleByIds(ids: string[]): Promise<(Event | null)[]> {
+      const selectedEvents = ids.map(id => this.events.find(event => event.id === id))
+    
+      return selectedEvents.map(event => event !== undefined ? event.clone() : null);
+    }
+
     async save(event: Event): Promise<void>
     {
         const existingEventIndex = this.events.findIndex((eventInRepo) => eventInRepo.id === event.id);
