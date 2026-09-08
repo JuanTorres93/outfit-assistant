@@ -1,8 +1,15 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { createTestGarment } from '@/../tests/createEntitiesTest/garmentCreate';
+import { Garment } from '@/domain/entities/Garment/Garment';
 
 import { MemoryColorMatchService } from '../MemoryColorMatchService';
+
+// matchScore is a private implementation detail (not part of the ColorMatchService
+// interface), so this type exposes just enough of it to exercise it directly in tests.
+type WithPrivateMatchScore = {
+  matchScore(garmentA: Garment, garmentB: Garment): number;
+};
 
 describe('MemoryColorMatchService', () => {
   let colorMatchService: MemoryColorMatchService;
@@ -11,13 +18,8 @@ describe('MemoryColorMatchService', () => {
     colorMatchService = new MemoryColorMatchService();
   });
 
-  // matchScore is an internal implementation detail (not part of the ColorMatchService
-  // interface), so it's exercised here via bracket-notation access rather than a public call.
-  const matchScore = (garmentA: ReturnType<typeof createTestGarment>, garmentB: ReturnType<typeof createTestGarment>) =>
-    (colorMatchService as unknown as { matchScore(a: typeof garmentA, b: typeof garmentB): number })['matchScore'](
-      garmentA,
-      garmentB,
-    );
+  const matchScore = (garmentA: Garment, garmentB: Garment): number =>
+    (colorMatchService as unknown as WithPrivateMatchScore).matchScore(garmentA, garmentB);
 
   describe('matchScore', () => {
     it('should score a neutral pairing highly regardless of the other color', () => {
