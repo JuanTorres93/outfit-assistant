@@ -17,6 +17,7 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/bcrypt": "^6.0.0",
     "@types/mongodb-memory-server": "^1.8.0",
@@ -25,6 +26,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "mongodb-memory-server": "^11.2.0",
+    "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
     "vitest": "^4.1.8"
   },
