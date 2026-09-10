@@ -18,6 +18,9 @@
   "type": "module",
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/bcrypt": "^6.0.0",
     "@types/mongodb-memory-server": "^1.8.0",
@@ -25,6 +28,7 @@
     "@types/node": "^25.9.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "jsdom": "^30.0.1",
     "mongodb-memory-server": "^11.2.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
