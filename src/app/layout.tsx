@@ -21,7 +21,9 @@ const fontDisplay = Playfair_Display({
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${fontBody.className} ${fontDisplay.variable}`}>{children}</body>
+      <body className={`${fontBody.className} ${fontDisplay.variable} text-text bg-background`}>
+        {children}
+      </body>
     </html>
   );
 }

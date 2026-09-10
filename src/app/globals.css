@@ -1,6 +1,20 @@
 @import 'tailwindcss';
 
 @theme inline {
+  /* Colors */
+  --color-background: #faf8f5;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f0ebe3;
+  --color-border: #e8e2d9;
+
+  --color-text: #1c1917;
+  --color-text-muted: #78716c;
+  --color-text-light: #faf8f5;
+
+  --color-cta: #c07b58;
+
+  --color-success: #7a9170;
+
   /* Fonts */
   --font-display: var(--font-display);
   --font-body: var(--font-body);
