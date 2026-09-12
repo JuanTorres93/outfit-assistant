@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+import './models/ClosetMongo';
 // TODO IMPORTANT: import Mongo models
 import './models/UserMongo';
 
@@ -29,6 +30,7 @@ export async function startMongooseConnection(uri: string) {
 export async function initMongoModels() {
   const models = [
     mongoose.model('User'),
+    mongoose.model('Closet'),
     // TODO IMPORTANT: import Mongo models
   ];
 
