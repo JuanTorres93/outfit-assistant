@@ -1,6 +1,22 @@
 import { ValidationDomainError } from '../../common/domainErrors';
 import { ValueObject } from '../ValueObject';
 
+export const VALID_COLORS = [
+  'white',
+  'black',
+  'gray',
+  'beige',
+  'brown',
+  'navy',
+  'red',
+  'orange',
+  'yellow',
+  'green',
+  'blue',
+  'purple',
+  'pink',
+];
+
 export class Color extends ValueObject<string> {
   private constructor(props: string) {
     super(props);
@@ -13,23 +29,7 @@ export class Color extends ValueObject<string> {
 
     const normalizedValue = value.toLowerCase();
 
-    if (
-      ![
-        'white',
-        'black',
-        'gray',
-        'beige',
-        'brown',
-        'navy',
-        'red',
-        'orange',
-        'yellow',
-        'green',
-        'blue',
-        'purple',
-        'pink',
-      ].includes(normalizedValue)
-    ) {
+    if (!VALID_COLORS.includes(normalizedValue)) {
       throw new ValidationDomainError('Invalid color');
     }
 

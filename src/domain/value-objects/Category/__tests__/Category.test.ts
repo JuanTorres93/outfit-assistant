@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { Category } from '../Category';
+
 import { ValidationDomainError } from '@/domain/common/domainErrors';
+
+import { Category, VALID_CATEGORIES } from '../Category';
 
 describe('Category', () => {
   describe('create', () => {
@@ -10,15 +12,7 @@ describe('Category', () => {
     });
 
     it('should create all valid categories', () => {
-      const categories = [
-        'top',
-        'bottom',
-        'outerwear',
-        'dress',
-        'footwear',
-        'accessory',
-      ];
-      categories.forEach((category) => {
+      VALID_CATEGORIES.forEach((category) => {
         expect(() => Category.create(category)).not.toThrow();
       });
     });

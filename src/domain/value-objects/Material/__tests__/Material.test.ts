@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { Material } from '../Material';
+
 import { ValidationDomainError } from '@/domain/common/domainErrors';
+
+import { Material, VALID_MATERIALS } from '../Material';
 
 describe('Material', () => {
   describe('create', () => {
@@ -10,21 +12,7 @@ describe('Material', () => {
     });
 
     it('should create all valid materials', () => {
-      const materials = [
-        'cotton',
-        'wool',
-        'polyester',
-        'silk',
-        'leather',
-        'denim',
-        'linen',
-        'cashmere',
-        'nylon',
-        'spandex',
-        'viscose',
-        'suede',
-      ];
-      materials.forEach((material) => {
+      VALID_MATERIALS.forEach((material) => {
         expect(() => Material.create(material)).not.toThrow();
       });
     });

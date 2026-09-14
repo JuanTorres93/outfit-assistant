@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { Color } from '../Color';
+
 import { ValidationDomainError } from '@/domain/common/domainErrors';
+
+import { Color, VALID_COLORS } from '../Color';
 
 describe('Color', () => {
   describe('create', () => {
@@ -10,22 +12,7 @@ describe('Color', () => {
     });
 
     it('should create all valid colors', () => {
-      const colors = [
-        'white',
-        'black',
-        'gray',
-        'beige',
-        'brown',
-        'navy',
-        'red',
-        'orange',
-        'yellow',
-        'green',
-        'blue',
-        'purple',
-        'pink',
-      ];
-      colors.forEach((color) => {
+      VALID_COLORS.forEach((color) => {
         expect(() => Color.create(color)).not.toThrow();
       });
     });

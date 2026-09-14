@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { Size } from '../Size';
+
 import { ValidationDomainError } from '@/domain/common/domainErrors';
+
+import { Size, VALID_SIZES } from '../Size';
 
 describe('Size', () => {
   describe('create', () => {
@@ -10,8 +12,7 @@ describe('Size', () => {
     });
 
     it('should create all valid sizes', () => {
-      const sizes = ['xs', 's', 'm', 'l', 'xl', 'xxl'];
-      sizes.forEach((size) => {
+      VALID_SIZES.forEach((size) => {
         expect(() => Size.create(size)).not.toThrow();
       });
     });

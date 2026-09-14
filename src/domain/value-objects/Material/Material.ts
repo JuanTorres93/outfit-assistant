@@ -1,6 +1,21 @@
 import { ValidationDomainError } from '../../common/domainErrors';
 import { ValueObject } from '../ValueObject';
 
+export const VALID_MATERIALS = [
+  'cotton',
+  'wool',
+  'polyester',
+  'silk',
+  'leather',
+  'denim',
+  'linen',
+  'cashmere',
+  'nylon',
+  'spandex',
+  'viscose',
+  'suede',
+];
+
 export class Material extends ValueObject<string> {
   private constructor(props: string) {
     super(props);
@@ -13,22 +28,7 @@ export class Material extends ValueObject<string> {
 
     const normalizedValue = value.toLowerCase();
 
-    if (
-      ![
-        'cotton',
-        'wool',
-        'polyester',
-        'silk',
-        'leather',
-        'denim',
-        'linen',
-        'cashmere',
-        'nylon',
-        'spandex',
-        'viscose',
-        'suede',
-      ].includes(normalizedValue)
-    ) {
+    if (!VALID_MATERIALS.includes(normalizedValue)) {
       throw new ValidationDomainError('Invalid material');
     }
 

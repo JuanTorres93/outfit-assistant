@@ -1,6 +1,8 @@
 import { ValidationDomainError } from '../../common/domainErrors';
 import { ValueObject } from '../ValueObject';
 
+export const VALID_CATEGORIES = ['top', 'bottom', 'outerwear', 'dress', 'footwear', 'accessory'];
+
 export class Category extends ValueObject<string> {
   private constructor(props: string) {
     super(props);
@@ -13,11 +15,7 @@ export class Category extends ValueObject<string> {
 
     const normalizedValue = value.toLowerCase();
 
-    if (
-      !['top', 'bottom', 'outerwear', 'dress', 'footwear', 'accessory'].includes(
-        normalizedValue,
-      )
-    ) {
+    if (!VALID_CATEGORIES.includes(normalizedValue)) {
       throw new ValidationDomainError('Invalid category');
     }
 

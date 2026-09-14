@@ -1,6 +1,8 @@
 import { ValidationDomainError } from '../../common/domainErrors';
 import { ValueObject } from '../ValueObject';
 
+export const VALID_SIZES = ['xs', 's', 'm', 'l', 'xl', 'xxl'];
+
 export class Size extends ValueObject<string> {
   private constructor(props: string) {
     super(props);
@@ -13,7 +15,7 @@ export class Size extends ValueObject<string> {
 
     const normalizedValue = value.toLowerCase();
 
-    if (!['xs', 's', 'm', 'l', 'xl', 'xxl'].includes(normalizedValue)) {
+    if (!VALID_SIZES.includes(normalizedValue)) {
       throw new ValidationDomainError('Invalid size');
     }
 
