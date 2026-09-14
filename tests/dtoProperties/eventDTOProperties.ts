@@ -6,6 +6,4 @@ const sampleEvent = Event.create({
     ...eventTestCreateProps
 });
 
-const allEventGetters = getGetters(sampleEvent);
-
-export const eventDTOProperties = allEventGetters;
+export const eventDTOProperties = getGetters(sampleEvent);

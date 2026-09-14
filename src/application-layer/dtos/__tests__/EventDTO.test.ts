@@ -4,7 +4,7 @@ import { createTestEvent } from '@/../tests/createEntitiesTest/eventCreate';
 import { eventDTOProperties } from '@/../tests/dtoProperties/eventDTOProperties';
 import { Event } from '@/domain/entities/Event/Event';
 
-import { EventDTO, toEventDTO } from '../EventDTO';
+import { EventDTO, toEventDTO, toEventEntity } from '../EventDTO';
 
 describe('EventDTO', () => {
     let event: Event;
@@ -19,6 +19,13 @@ describe('EventDTO', () => {
             eventDTO = toEventDTO(event);
         });
 
+        it('should have a property for each event getter', () => {
+            for (const getter of eventDTOProperties)
+            {
+                expect(eventDTO).toHaveProperty(getter);
+            }
+        });
+
         it('should convert Event to EventDTO', () => {
             expect(eventDTO).toEqual({
                 id: event.id,
@@ -31,4 +38,24 @@ describe('EventDTO', () => {
             });
         });
     });
+
+    describe('toEventEntity', () => {
+        beforeEach(() => {
+            eventDTO = toEventDTO(event);
+        });
+
+        it('should convert EventDTO back to Event', () => {
+            const eventFromDTO = toEventEntity(eventDTO);
+
+            expect(eventFromDTO).toBeInstanceOf(Event);
+
+            expect(eventFromDTO.id).toEqual(event.id);
+            expect(eventFromDTO.name).toEqual(event.name);
+            expect(eventFromDTO.location).toEqual(event.location);
+            expect(eventFromDTO.date).toEqual(event.date);
+            expect(eventFromDTO.userId).toEqual(event.userId);
+            expect(eventFromDTO.createdAt).toEqual(event.createdAt);
+            expect(eventFromDTO.updatedAt).toEqual(event.updatedAt);
+        })
+    })
 });

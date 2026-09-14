@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 // TODO IMPORTANT: import Mongo models
+import './models/EventMongo';
 import './models/UserMongo';
 
 // Prevent multiple connections in development on hot reload
@@ -29,6 +30,7 @@ export async function startMongooseConnection(uri: string) {
 export async function initMongoModels() {
   const models = [
     mongoose.model('User'),
+    mongoose.model('Event'),
     // TODO IMPORTANT: import Mongo models
   ];
 
