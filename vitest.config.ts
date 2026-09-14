@@ -10,6 +10,11 @@ export default defineConfig({
 
     globals: true,
     include: ['src/**/__tests__/**/*.{spec,test}.{ts,tsx}', 'tests/**/*.{spec,test}.{ts,tsx}'],
+
+    // mongodb-memory-server needs to download the Mongo binary on a cold
+    // run (e.g. a fresh CI runner), which can exceed the 10s default.
+    hookTimeout: 60000,
+    testTimeout: 60000,
   },
   resolve: {
     alias: {
