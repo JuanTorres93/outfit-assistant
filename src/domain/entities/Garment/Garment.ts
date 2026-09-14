@@ -6,11 +6,6 @@ import { Id } from '@/domain/value-objects/Id/Id';
 
 import { Text, TextOptions } from '@/domain/value-objects/Text/Text';
 
-import { Category } from '@/domain/value-objects/Category/Category';
-import { Color } from '@/domain/value-objects/Color/Color';
-import { Material } from '@/domain/value-objects/Material/Material';
-import { Size } from '@/domain/value-objects/Size/Size';
-
 export type GarmentCreateProps = {
   id: string;
 
@@ -31,12 +26,12 @@ export type GarmentProps = {
   id: Id;
 
   name: Text;
-  category: Category;
-  colors: Color[];
+  category: Text;
+  colors: Text[];
 
   brand?: Text;
-  size?: Size;
-  material?: Material;
+  size?: Text;
+  material?: Text;
   seasons?: Season[];
 
   createdAt: DomainDate;
@@ -56,12 +51,12 @@ export class Garment {
       id: Id.create(props.id),
 
       name: Text.create(props.name, nameTextOptions),
-      category: Category.create(props.category),
-      colors: props.colors.map((color) => Color.create(color)),
+      category: Text.create(props.category),
+      colors: props.colors.map((color) => Text.create(color)),
 
       brand: props.brand ? Text.create(props.brand) : undefined,
-      size: props.size ? Size.create(props.size) : undefined,
-      material: props.material ? Material.create(props.material) : undefined,
+      size: props.size ? Text.create(props.size) : undefined,
+      material: props.material ? Text.create(props.material) : undefined,
       seasons: props.seasons?.map((season) => Season.create(season)),
 
       createdAt: DomainDate.create(props.createdAt),
