@@ -126,7 +126,7 @@ repos.forEach(({ name, repoClass }) => {
             it('should return an empty array if no events are found for the user id', async() => {
                 const foundEvents = await repo.getByUserId('user-id-that-doesnt-exist');
 
-                expect(foundEvents).toEqual(null);
+                expect(foundEvents).toBeNull;
             })
         })
 
