@@ -38,24 +38,23 @@ export class OutfitSuggestionByEventUseCase {
 
     if (userGarments.length === 0) {
       throw new NotFoundDomainError('User has no garments in their closet.');
-    } else {
-      if (event === null) {
-        throw new NotFoundDomainError('Event not found.');
-      }
-
-      const filteredGarments = await this.outfitSuggestionByEventService.suggestOutfitForEvent(
-        userGarments,
-        event,
-      );
-
-      const garmentIds = filteredGarments.map((garment) => garment.id);
-
-      return Outfit.create({
-        id: this.idGenerator.generateId(),
-        userId: request.userId,
-        name: 'Suggested Outfit for Event',
-        garmentIds: garmentIds,
-      });
+    } 
+    if (event === null) {
+      throw new NotFoundDomainError('Event not found.');
     }
+
+    const filteredGarments = await this.outfitSuggestionByEventService.suggestOutfitForEvent(
+      userGarments,
+      event,
+    );
+
+    const garmentIds = filteredGarments.map((garment) => garment.id);
+
+    return Outfit.create({
+      id: this.idGenerator.generateId(),
+      userId: request.userId,
+      name: 'Suggested Outfit for Event',
+      garmentIds: garmentIds,
+    });
   }
 }
