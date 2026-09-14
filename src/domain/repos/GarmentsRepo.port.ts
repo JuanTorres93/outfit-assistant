@@ -5,6 +5,8 @@ export interface GarmentsRepo {
 
     getById(id: string): Promise<Garment | null>;
 
+    getMultipleByIds(id: string[]): Promise<(Garment | null)[]>;
+
     save(garment: Garment): Promise<void>;
 
     deleteById(id: string): Promise<void>;

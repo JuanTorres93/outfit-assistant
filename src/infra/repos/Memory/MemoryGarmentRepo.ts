@@ -12,6 +12,12 @@ export class MemoryGarmentRepo implements GarmentsRepo {
     const garment = this.garments.find((garment) => garment.id === id);
 
     return garment?.clone() || null;
+  } 
+
+  async getMultipleByIds(ids: string[]): Promise<(Garment | null)[]> {
+    const selectedGarments = ids.map(id => this.garments.find(garment => garment.id === id))
+
+    return selectedGarments.map(garment => garment !== undefined ? garment.clone() : null);
   }
 
   async save(garment: Garment): Promise<void> {
