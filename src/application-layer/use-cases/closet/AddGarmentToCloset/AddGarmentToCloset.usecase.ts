@@ -15,13 +15,18 @@ export class AddGarmentToClosetUsecase {
   ) {}
 
   async execute(request: AddGarmentToClosetUsecaseRequest): Promise<Closet> {
-    const closet = await this.closetsRepo.getById(request.closetId);
+    const [closet, garment] = await Promise.all([
+      this.closetsRepo.getById(request.closetId),
+      this.garmentsRepo.getById(request.garmentId),
+    ]);
 
-    if (!closet) throw new NotFoundDomainError(`Closet with id ${request.closetId} not found`);
+    if (!closet) {
+      throw new NotFoundDomainError(`Closet with id ${request.closetId} not found`);
+    }
 
-    const garment = await this.garmentsRepo.getById(request.garmentId);
-
-    if (!garment) throw new NotFoundDomainError(`Garment with id ${request.garmentId} not found`);
+    if (!garment) {
+      throw new NotFoundDomainError(`Garment with id ${request.garmentId} not found`);
+    }
 
     closet.addGarment(request.garmentId);
 

@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+import './models/ClosetMongo';
+import './models/OutfitMongo';
 // TODO IMPORTANT: import Mongo models
 import './models/EventMongo';
 import './models/UserMongo';
@@ -31,6 +33,8 @@ export async function initMongoModels() {
   const models = [
     mongoose.model('User'),
     mongoose.model('Event'),
+    mongoose.model('Closet'),
+    mongoose.model('Outfit'),
     // TODO IMPORTANT: import Mongo models
   ];
 
