@@ -1,13 +1,19 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { createTestGarment } from '@/../tests/createEntitiesTest/garmentCreate';
-
 import { Garment } from '@/domain/entities/Garment/Garment';
 
 import { MemoryGarmentRepo } from '../Memory/MemoryGarmentRepo';
+import {
+  clearMongoTestDB,
+  setupMongoTestDB,
+  teardownMongoTestDB,
+} from '../mongoose/__tests__/setupMongoTestDB';
+import { MongooseGarmentsRepo } from '../mongoose/repos/MongooseGarmentsRepo';
 
 const repos = [
   { name: 'MemoryGarmentRepo', repoClass: MemoryGarmentRepo },
+  { name: 'MongooseGarmentsRepo', repoClass: MongooseGarmentsRepo },
 ];
 
 repos.forEach(({ name, repoClass }) => {
@@ -15,12 +21,27 @@ repos.forEach(({ name, repoClass }) => {
     let repo: InstanceType<typeof repoClass>;
     let garment: Garment;
 
+    beforeAll(async () => {
+      if (name === 'MongooseGarmentsRepo') {
+        await setupMongoTestDB();
+      }
+      garment = createTestGarment();
+      repo = new repoClass();
+      await repo.save(garment);
+    });
+
     beforeEach(async () => {
       garment = createTestGarment();
 
       repo = new repoClass();
 
       await repo.save(garment);
+    });
+
+    afterAll(async () => {
+      if (name === 'MongooseGarmentsRepo') {
+        await teardownMongoTestDB();
+      }
     });
 
     describe('getAll', () => {
@@ -31,8 +52,9 @@ repos.forEach(({ name, repoClass }) => {
       });
 
       it('should return an empty array if no garments are saved', async () => {
-        const emptyRepo = new repoClass();
+        if (name === 'MongooseGarmentsRepo') await clearMongoTestDB();
 
+        const emptyRepo = new repoClass();
         const garments = await emptyRepo.getAll();
 
         expect(garments).toEqual([]);
@@ -47,9 +69,7 @@ repos.forEach(({ name, repoClass }) => {
 
         const garmentsBefore = await repo.getAll();
 
-        const garmentIdsBefore = garmentsBefore.map(
-          (garment) => garment.id,
-        );
+        const garmentIdsBefore = garmentsBefore.map((garment) => garment.id);
         const numberOfGarmentsBefore = garmentsBefore.length;
 
         expect(garmentIdsBefore).not.toContain(newGarment.id);
@@ -57,14 +77,10 @@ repos.forEach(({ name, repoClass }) => {
         await repo.save(newGarment);
 
         const garmentsAfter = await repo.getAll();
-        const garmentIdsAfter = garmentsAfter.map(
-          (garment) => garment.id,
-        );
+        const garmentIdsAfter = garmentsAfter.map((garment) => garment.id);
 
         expect(garmentIdsAfter).toContain(newGarment.id);
-        expect(garmentsAfter.length).toBe(
-          numberOfGarmentsBefore + 1,
-        );
+        expect(garmentsAfter.length).toBe(numberOfGarmentsBefore + 1);
       });
     });
 
@@ -76,9 +92,7 @@ repos.forEach(({ name, repoClass }) => {
       });
 
       it('should return null if garment is not found', async () => {
-        const foundGarment = await repo.getById(
-          'id-that-doesnt-exist',
-        );
+        const foundGarment = await repo.getById('id-that-doesnt-exist');
 
         expect(foundGarment).toBeNull();
       });
@@ -88,9 +102,7 @@ repos.forEach(({ name, repoClass }) => {
       it('should delete a garment by id', async () => {
         await repo.deleteById(garment.id);
 
-        const foundGarment = await repo.getById(
-          garment.id,
-        );
+        const foundGarment = await repo.getById(garment.id);
 
         expect(foundGarment).toBeNull();
       });
