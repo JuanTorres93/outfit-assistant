@@ -18,19 +18,19 @@ const eventSchema = new mongoose.Schema<EventCreateProps>({
   },
   date: {
     type: Date,
-    required: false,
+    required: true,
   },
   userId: {
     type: String,
-    required: false,
+    required: true,
   },
   createdAt: {
     type: Date,
-    required: false,
+    required: true,
   },
   updatedAt: {
     type: Date,
-    required: false,
+    required: true,
   },
 });
 
