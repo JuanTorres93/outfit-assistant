@@ -302,7 +302,7 @@ describe('MemoryColorMatchService', () => {
       expect(colorMatchService.isValidColorCombination(garments)).toBe(false);
     });
 
-    it.only('should not double-count the same color name in different casings', () => {
+    it('should not double-count the same color name in different casings', () => {
       const garments = [
         createTestGarment({ id: 'garment-1', colors: ['White'] }),
         createTestGarment({ id: 'garment-2', colors: ['white'] }),
