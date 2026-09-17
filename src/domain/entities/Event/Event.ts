@@ -1,4 +1,3 @@
-import { AlreadyExistsDomainError, NotFoundDomainError } from '@/domain/common/domainErrors';
 import { DomainDate } from '@/domain/value-objects/DomainDate/DomainDate';
 
 import { Id } from '../../value-objects/Id/Id';
@@ -99,4 +98,3 @@ export class Event {
     return this.props.updatedAt.value;
   }
 }
-
