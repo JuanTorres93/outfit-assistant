@@ -44,7 +44,7 @@ function colorPairScore(colorA: ColorInfo, colorB: ColorInfo): number {
   }
 
   const brightnessDiff = Math.abs(colorA.brightness - colorB.brightness);
-  const brightnessBonus = Math.min(brightnessDiff, 30) / 30 * MAX_BRIGHTNESS_BONUS;
+  const brightnessBonus = (Math.min(brightnessDiff, 30) / 30) * MAX_BRIGHTNESS_BONUS;
 
   return Math.min(MAX_SCORE, baseScore + brightnessBonus);
 }
@@ -92,7 +92,9 @@ export class MemoryColorMatchService implements ColorMatchService {
     if (distinctColorNames.length > MAX_OUTFIT_COLORS) return false;
 
     if (distinctColorNames.length === MAX_OUTFIT_COLORS) {
-      const neutralCount = distinctColorNames.filter((colorName) => getColorInfo(colorName).isNeutral).length;
+      const neutralCount = distinctColorNames.filter(
+        (colorName) => getColorInfo(colorName).isNeutral,
+      ).length;
 
       return neutralCount >= MIN_NEUTRAL_COLORS_AT_MAX;
     }
