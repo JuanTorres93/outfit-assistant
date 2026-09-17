@@ -15,6 +15,8 @@ export const VALID_COLORS = [
   'blue',
   'purple',
   'pink',
+  'maroon',
+  'turquoise',
 ];
 
 export class Color extends ValueObject<string> {
@@ -27,7 +29,7 @@ export class Color extends ValueObject<string> {
       throw new ValidationDomainError('Color must be a string');
     }
 
-    const normalizedValue = value.toLowerCase();
+    const normalizedValue = value.toLowerCase().trim();
 
     if (!VALID_COLORS.includes(normalizedValue)) {
       throw new ValidationDomainError('Invalid color');
