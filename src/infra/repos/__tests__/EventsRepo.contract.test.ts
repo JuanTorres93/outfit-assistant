@@ -1,4 +1,4 @@
-import { beforeEach, describe, it, expect } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, it, expect } from 'vitest';
 
 import { createTestEvent } from "@/../tests/createEntitiesTest/eventCreate";
 
@@ -6,8 +6,13 @@ import { Event } from '@/domain/entities/Event/Event';
 
 import { MemoryEventRepo } from '../Memory/MemoryEventRepo';
 
+import { clearMongoTestDB, setupMongoTestDB, teardownMongoTestDB } from '../mongoose/__tests__/setupMongoTestDB';
+import { MongooseEventsRepo } from '../mongoose/repos/MongooseEventRepo';
+import { after } from 'node:test';
+
 const repos = [
     { name: 'MemoryEventRepo', repoClass: MemoryEventRepo },
+    { name: 'MongooseEventsRepo', repoClass: MongooseEventsRepo},
 ];
 
 repos.forEach(({ name, repoClass }) => {
@@ -15,13 +20,23 @@ repos.forEach(({ name, repoClass }) => {
         let repo: InstanceType<typeof repoClass>;
         let event: Event;
 
+        beforeAll(async () => {
+            if (name === 'MongooseEventsRepo') await setupMongoTestDB();
+        });
+
         beforeEach(async () => {
+            if (name === 'MongooseEventsRepo') await clearMongoTestDB();
+
             event = createTestEvent();
 
             repo = new repoClass();
 
             await repo.save(event);
         });
+
+        afterAll(async () => {
+            if(name === 'MongooseEventsRepo') await teardownMongoTestDB();
+        })
 
         describe('getAll', () => {
             it('should return all events', async () => {
@@ -31,6 +46,8 @@ repos.forEach(({ name, repoClass }) => {
             });
 
             it('should return an empty array if no events are saved', async () => {
+                if (name === 'MongooseEventsRepo') await clearMongoTestDB();
+                
                 const emptyRepo = new repoClass();
 
                 const events = await emptyRepo.getAll();
@@ -75,6 +92,30 @@ repos.forEach(({ name, repoClass }) => {
             });
         });
 
+        describe('getMultipleByIds', () => {
+            it('should return the events in the same order as the given ids', async () => {
+                const otherEvent = createTestEvent({ id: 'other-event-id', userId: 'other-user-id'});
+
+                await repo.save(otherEvent);
+
+                const foundEvents = await repo.getMultipleByIds([otherEvent.id, event.id]);
+
+                expect(foundEvents).toEqual([otherEvent, event]);
+            });
+
+            it('should return null for ids that do not exist', async() => {
+                const foundEvents = await repo.getMultipleByIds([event.id, 'non-existent-id']);
+
+                expect(foundEvents).toEqual([event, null]);
+            });
+
+            it('should return an empty array for an empty id list', async () => {
+                const foundEvents = await repo.getMultipleByIds([]);
+
+                expect(foundEvents).toEqual([]);
+            })
+        });
+
         describe('getByUserId', () => {
             it('should return all events made by user id', async() => {
                 const foundEvents = await repo.getByUserId(event.userId);
@@ -85,7 +126,7 @@ repos.forEach(({ name, repoClass }) => {
             it('should return an empty array if no events are found for the user id', async() => {
                 const foundEvents = await repo.getByUserId('user-id-that-doesnt-exist');
 
-                expect(foundEvents).toEqual(null);
+                expect(foundEvents).toBeNull;
             })
         })
 

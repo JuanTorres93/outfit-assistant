@@ -22,3 +22,12 @@ export function toEventDTO(event: Event): EventDTO {
         updatedAt: event.updatedAt.toISOString(),
     }
 }
+
+export function toEventEntity(dto: EventDTO): Event{
+    return Event.create({
+        ...dto,
+
+        createdAt: dto?.createdAt ? new Date(dto.createdAt) : undefined,
+        updatedAt: dto?.updatedAt ? new Date(dto.updatedAt) : undefined,
+    });
+}
