@@ -1,13 +1,19 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { createTestCloset } from '@/../tests/createEntitiesTest/closetCreate';
 import { Closet } from '@/domain/entities/Closet/Closet';
 
 import { MemoryClosetsRepo } from '../Memory/MemoryClosetsRepo';
+import {
+  clearMongoTestDB,
+  setupMongoTestDB,
+  teardownMongoTestDB,
+} from '../mongoose/__tests__/setupMongoTestDB';
+import { MongooseClosetsRepo } from '../mongoose/repos/MongooseClosetsRepo';
 
 const repos = [
   { name: 'MemoryClosetsRepo', repoClass: MemoryClosetsRepo },
-  // Add more repo implementations here as needed
+  { name: 'MongooseClosetsRepo', repoClass: MongooseClosetsRepo },
 ];
 
 repos.forEach(({ name, repoClass }) => {
@@ -15,12 +21,22 @@ repos.forEach(({ name, repoClass }) => {
     let repo: InstanceType<typeof repoClass>;
     let closet: Closet;
 
+    beforeAll(async () => {
+      if (name === 'MongooseClosetsRepo') await setupMongoTestDB();
+    });
+
     beforeEach(async () => {
+      if (name === 'MongooseClosetsRepo') await clearMongoTestDB();
+
       closet = createTestCloset();
 
       repo = new repoClass();
 
       await repo.save(closet);
+    });
+
+    afterAll(async () => {
+      if (name === 'MongooseClosetsRepo') await teardownMongoTestDB();
     });
 
     describe('getAll', () => {
@@ -31,6 +47,8 @@ repos.forEach(({ name, repoClass }) => {
       });
 
       it('should return an empty array if no closets are saved', async () => {
+        if (name === 'MongooseClosetsRepo') await clearMongoTestDB();
+
         const emptyRepo = new repoClass();
 
         const closets = await emptyRepo.getAll();
@@ -104,6 +122,30 @@ repos.forEach(({ name, repoClass }) => {
         const foundCloset = await repo.getByUserId('non-existent-user-id');
 
         expect(foundCloset).toBeNull();
+      });
+    });
+
+    describe('getMultipleByIds', () => {
+      it('should return the closets in the same order as the given ids', async () => {
+        const otherCloset = createTestCloset({ id: 'other-closet-id', userId: 'other-user-id' });
+
+        await repo.save(otherCloset);
+
+        const foundClosets = await repo.getMultipleByIds([otherCloset.id, closet.id]);
+
+        expect(foundClosets).toEqual([otherCloset, closet]);
+      });
+
+      it('should return null for ids that do not exist', async () => {
+        const foundClosets = await repo.getMultipleByIds([closet.id, 'non-existent-id']);
+
+        expect(foundClosets).toEqual([closet, null]);
+      });
+
+      it('should return an empty array for an empty id list', async () => {
+        const foundClosets = await repo.getMultipleByIds([]);
+
+        expect(foundClosets).toEqual([]);
       });
     });
 

@@ -1,13 +1,19 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { createTestOutfit } from '@/../tests/createEntitiesTest/outfitCreate';
 import { Outfit } from '@/domain/entities/Outfit/Outfit';
 
 import { MemoryOutfitsRepo } from '../Memory/MemoryOutfitsRepo';
+import {
+  clearMongoTestDB,
+  setupMongoTestDB,
+  teardownMongoTestDB,
+} from '../mongoose/__tests__/setupMongoTestDB';
+import { MongooseOutfitsRepo } from '../mongoose/repos/MongooseOutfitsRepo';
 
 const repos = [
   { name: 'MemoryOutfitsRepo', repoClass: MemoryOutfitsRepo },
-  // Add more repo implementations here as needed
+  { name: 'MongooseOutfitsRepo', repoClass: MongooseOutfitsRepo },
 ];
 
 repos.forEach(({ name, repoClass }) => {
@@ -15,12 +21,22 @@ repos.forEach(({ name, repoClass }) => {
     let repo: InstanceType<typeof repoClass>;
     let outfit: Outfit;
 
+    beforeAll(async () => {
+      if (name === 'MongooseOutfitsRepo') await setupMongoTestDB();
+    });
+
     beforeEach(async () => {
+      if (name === 'MongooseOutfitsRepo') await clearMongoTestDB();
+
       outfit = createTestOutfit();
 
       repo = new repoClass();
 
       await repo.save(outfit);
+    });
+
+    afterAll(async () => {
+      if (name === 'MongooseOutfitsRepo') await teardownMongoTestDB();
     });
 
     describe('getAll', () => {
@@ -31,6 +47,8 @@ repos.forEach(({ name, repoClass }) => {
       });
 
       it('should return an empty array if no outfits are saved', async () => {
+        if (name === 'MongooseOutfitsRepo') await clearMongoTestDB();
+
         const emptyRepo = new repoClass();
 
         const outfits = await emptyRepo.getAll();
@@ -102,6 +120,30 @@ repos.forEach(({ name, repoClass }) => {
 
       it('should return an empty array if user has no outfits', async () => {
         const foundOutfits = await repo.getAllByUserId('non-existent-user-id');
+
+        expect(foundOutfits).toEqual([]);
+      });
+    });
+
+    describe('getMultipleByIds', () => {
+      it('should return the outfits in the same order as the given ids', async () => {
+        const otherOutfit = createTestOutfit({ id: 'other-outfit-id' });
+
+        await repo.save(otherOutfit);
+
+        const foundOutfits = await repo.getMultipleByIds([otherOutfit.id, outfit.id]);
+
+        expect(foundOutfits).toEqual([otherOutfit, outfit]);
+      });
+
+      it('should return null for ids that do not exist', async () => {
+        const foundOutfits = await repo.getMultipleByIds([outfit.id, 'non-existent-id']);
+
+        expect(foundOutfits).toEqual([outfit, null]);
+      });
+
+      it('should return an empty array for an empty id list', async () => {
+        const foundOutfits = await repo.getMultipleByIds([]);
 
         expect(foundOutfits).toEqual([]);
       });
