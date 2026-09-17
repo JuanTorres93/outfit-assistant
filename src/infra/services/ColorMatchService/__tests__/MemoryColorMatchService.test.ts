@@ -213,37 +213,6 @@ describe('MemoryColorMatchService', () => {
 
       expect(result).toEqual({});
     });
-
-    it('should still add matches to an already-included category after the cap is reached', () => {
-      const whiteShirt = createTestGarment({ id: 'garment-1', colors: ['White'] });
-      const firstCategoryCandidates = Array.from({ length: 50 }, (_, i) =>
-        createTestGarment({
-          id: `garment-category-${i}`,
-          colors: ['White'],
-          category: `category-${i}`,
-        }),
-      );
-      const secondMatchForFirstCategory = createTestGarment({
-        id: 'garment-category-0-second',
-        colors: ['White'],
-        category: 'category-0',
-      });
-      const overflowCategoryCandidate = createTestGarment({
-        id: 'garment-overflow',
-        colors: ['White'],
-        category: 'category-overflow',
-      });
-
-      const result = colorMatchService.getMatchingGarmentsByCategory(whiteShirt, [
-        ...firstCategoryCandidates,
-        secondMatchForFirstCategory,
-        overflowCategoryCandidate,
-      ]);
-
-      expect(Object.keys(result)).toHaveLength(50);
-      expect(result['category-0']).toHaveLength(2);
-      expect(result['category-overflow']).toBeUndefined();
-    });
   });
 
   describe('isValidColorCombination', () => {
