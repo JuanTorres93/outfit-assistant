@@ -19,18 +19,27 @@ describe('GetColorMatchingGarmentsByCategoryInClosetUsecase', () => {
     closetsRepo = new MemoryClosetsRepo();
     garmentsRepo = new MemoryGarmentRepo();
     colorMatchService = new MemoryColorMatchService();
-    getColorMatchingGarmentsByCategoryInClosetUsecase = new GetColorMatchingGarmentsByCategoryInClosetUsecase(
-      closetsRepo,
-      garmentsRepo,
-      colorMatchService,
-    );
+    getColorMatchingGarmentsByCategoryInClosetUsecase =
+      new GetColorMatchingGarmentsByCategoryInClosetUsecase(
+        closetsRepo,
+        garmentsRepo,
+        colorMatchService,
+      );
   });
 
   describe('Execute', () => {
     it('should return the closet garments that match the target, grouped by category', async () => {
       const whiteShirt = createTestGarment({ id: 'garment-1', colors: ['White'] });
-      const bluePants = createTestGarment({ id: 'garment-2', colors: ['Blue'], category: 'pants' });
-      const blueShoes = createTestGarment({ id: 'garment-3', colors: ['Blue'], category: 'shoes' });
+      const bluePants = createTestGarment({
+        id: 'garment-2',
+        colors: ['Blue'],
+        category: 'bottom',
+      });
+      const blueShoes = createTestGarment({
+        id: 'garment-3',
+        colors: ['Blue'],
+        category: 'footwear',
+      });
       const closet = createTestCloset({
         garmentIds: [whiteShirt.id, bluePants.id, blueShoes.id],
       });
@@ -46,14 +55,18 @@ describe('GetColorMatchingGarmentsByCategoryInClosetUsecase', () => {
       });
 
       expect(result).toEqual({
-        pants: [bluePants],
-        shoes: [blueShoes],
+        bottom: [bluePants],
+        footwear: [blueShoes],
       });
     });
 
     it('should skip garment ids in the closet that no longer resolve to a garment', async () => {
       const whiteShirt = createTestGarment({ id: 'garment-1', colors: ['White'] });
-      const bluePants = createTestGarment({ id: 'garment-2', colors: ['Blue'], category: 'pants' });
+      const bluePants = createTestGarment({
+        id: 'garment-2',
+        colors: ['Blue'],
+        category: 'bottom',
+      });
       const closet = createTestCloset({ garmentIds: [bluePants.id, 'deleted-garment-id'] });
 
       await garmentsRepo.save(whiteShirt);
@@ -65,7 +78,7 @@ describe('GetColorMatchingGarmentsByCategoryInClosetUsecase', () => {
         garmentId: whiteShirt.id,
       });
 
-      expect(result).toEqual({ pants: [bluePants] });
+      expect(result).toEqual({ bottom: [bluePants] });
     });
   });
 
