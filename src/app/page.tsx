@@ -1,5 +1,6 @@
-import testImage from './ExternalFiles/ImageTEst.png';
-import HeroImage from './_ui/Images/HeroImage';
+import testImage from 'public/ExternalFiles/ImageTest.png';
+
+import SuggestedOutfitOverview from './_ui/Images/SuggestedOutfitOverview';
 
 export default function Page() {
   return (
@@ -8,7 +9,7 @@ export default function Page() {
 
       <p className="text-lg ">Welcome to your Next.js app with custom fonts!</p>
 
-      <HeroImage src={'./ExternalFiles/ImageTEst.png'} alt="Should Work" />
+      <SuggestedOutfitOverview src={testImage} alt="Should Work" />
     </div>
   );
 }
