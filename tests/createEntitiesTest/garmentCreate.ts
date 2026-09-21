@@ -5,12 +5,12 @@ export const testGarmentId = 'garment-id';
 export const garmentTestCreateProps: GarmentCreateProps = {
   id: testGarmentId,
   name: 'Basic White T-Shirt',
-  category: 'T-Shirt',
-  colors: ['White'],
+  category: 'top',
+  colors: ['white'],
 
   brand: 'Zara',
-  size: 'M',
-  material: 'Cotton',
+  size: 'm',
+  material: 'cotton',
   seasons: ['spring', 'summer'],
 
   createdAt: new Date(),
