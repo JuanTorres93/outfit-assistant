@@ -2,6 +2,14 @@ import testImage from 'public/ExternalFiles/ImageTest.png';
 
 import SuggestedOutfitOverview from './_ui/Images/SuggestedOutfitOverview';
 
+const outfitDTO = {
+  id: 'test-outfit-id',
+  userId: 'test-user-id',
+  garmentIds: ['test-garment-id-1', 'test-garment-id-2'],
+  imageUrl: testImage,
+  name: 'Test Outfit',
+};
+
 export default function Page() {
   return (
     <div>
@@ -9,7 +17,7 @@ export default function Page() {
 
       <p className="text-lg ">Welcome to your Next.js app with custom fonts!</p>
 
-      <SuggestedOutfitOverview src={testImage} alt="Should Work" />
+      <SuggestedOutfitOverview outfitDTO={outfitDTO} />
     </div>
   );
 }

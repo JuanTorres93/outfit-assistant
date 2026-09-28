@@ -2,12 +2,14 @@ import Image from 'next/image';
 
 import { twMerge } from 'tailwind-merge';
 
-type SuggestedOutfitOverviewProps = Pick<React.ComponentProps<typeof Image>, 'src' | 'alt'> &
-  React.HTMLAttributes<HTMLDivElement>;
+import type { OutfitDTO } from '@/application-layer/dtos/OutfitDTO';
+
+type SuggestedOutfitOverviewProps = Pick<React.ComponentProps<typeof Image>, 'src' | 'alt'> & {
+  outfitDTO: OutfitDTO;
+} & React.HTMLAttributes<HTMLDivElement>;
 
 export default function SuggestedOutfitOverview({
-  src,
-  alt,
+  outfitDTO,
   className,
   children,
   ...props
@@ -17,7 +19,9 @@ export default function SuggestedOutfitOverview({
       className={twMerge('relative h-40 w-60 overflow-hidden rounded-3xl border', className)}
       {...props}
     >
-      <Image src={src} alt={alt} fill className="object-cover" />
+      {outfitDTO.imageUrl && (
+        <Image src={outfitDTO.imageUrl} alt={outfitDTO.name} fill className="object-cover" />
+      )}
       <div className="relative z-10">
         {children ?? (
           <div>

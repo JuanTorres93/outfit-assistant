@@ -9,6 +9,7 @@ export type OutfitCreateProps = {
   userId: string;
   name: string;
   garmentIds?: string[];
+  imageUrl?: string;
 
   createdAt?: Date;
   updatedAt?: Date;
@@ -20,6 +21,7 @@ export type OutfitProps = {
   userId: Id;
   name: Text;
   garmentIds: Id[];
+  imageUrl?: Text;
 
   createdAt: DomainDate;
   updatedAt: DomainDate;
@@ -44,6 +46,7 @@ export class Outfit {
       userId: Id.create(props.userId),
       name: Text.create(props.name, nameTextOptions),
       garmentIds,
+      imageUrl: props.imageUrl === undefined ? undefined : Text.create(props.imageUrl),
 
       createdAt: DomainDate.create(props.createdAt),
       updatedAt: DomainDate.create(props.updatedAt),
@@ -98,6 +101,7 @@ export class Outfit {
       userId: this.userId,
       name: this.name,
       garmentIds: this.garmentIds,
+      imageUrl: this.imageUrl,
 
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
@@ -118,6 +122,10 @@ export class Outfit {
 
   get garmentIds() {
     return this.props.garmentIds.map((garmentId) => garmentId.value);
+  }
+
+  get imageUrl() {
+    return this.props.imageUrl?.value;
   }
 
   get createdAt() {

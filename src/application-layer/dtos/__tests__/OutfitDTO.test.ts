@@ -32,6 +32,7 @@ describe('OutfitDTO', () => {
         userId: outfit.userId,
         name: outfit.name,
         garmentIds: outfit.garmentIds,
+        imageUrl: outfit.imageUrl,
 
         createdAt: outfit.createdAt.toISOString(),
         updatedAt: outfit.updatedAt.toISOString(),

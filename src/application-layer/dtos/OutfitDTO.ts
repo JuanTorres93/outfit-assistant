@@ -6,6 +6,7 @@ export type OutfitDTO = {
   userId: string;
   name: string;
   garmentIds: string[];
+  imageUrl?: string;
 
   createdAt: string;
   updatedAt: string;
@@ -18,6 +19,7 @@ export function toOutfitDTO(outfit: Outfit): OutfitDTO {
     userId: outfit.userId,
     name: outfit.name,
     garmentIds: outfit.garmentIds,
+    imageUrl: outfit.imageUrl,
 
     createdAt: outfit.createdAt.toISOString(),
     updatedAt: outfit.updatedAt.toISOString(),
